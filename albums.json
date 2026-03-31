@@ -1,0 +1,116 @@
+[
+  {
+    "artist": "Radiohead",
+    "album": "OK Computer",
+    "year": 1997,
+    "genre": "Art Rock",
+    "rating": 10,
+    "favorite_song": "Exit Music (For a Film)",
+    "songs": [
+      "Airbag",
+      "Paranoid Android",
+      "Subterranean Homesick Alien",
+      "Exit Music (For a Film)",
+      "Let Down",
+      "Karma Police",
+      "Fitter Happier",
+      "Electioneering",
+      "Climbing Up the Walls",
+      "No Surprises",
+      "Lucky",
+      "The Tourist"
+    ],
+    "review": "Eines der wichtigsten Alben der 90er. Thom Yorke beschreibt eine Welt, in der Technologie und Entfremdung Hand in Hand gehen – und klingt dabei zeitloser denn je. Paranoid Android allein rechtfertigt die Höchstnote."
+  },
+  {
+    "artist": "Burial",
+    "album": "Untrue",
+    "year": 2007,
+    "genre": "UK Garage / Ambient",
+    "rating": 9,
+    "favorite_song": "Archangel",
+    "songs": [
+      "Untitled",
+      "Archangel",
+      "Near Dark",
+      "Ghost Hardware",
+      "Endorphin",
+      "Etched Headplate",
+      "In McDonalds",
+      "Null",
+      "Homeless",
+      "Shell of Light",
+      "Dog Shelter",
+      "Raver",
+      "Distant Lights",
+      "Hired Gun"
+    ],
+    "review": "Stadtlandschaften um 4 Uhr morgens, in Vinyl gepresst. Burials zweites Album ist eine Meditation über Einsamkeit und Nostalgie. Die zerhackten Vocals und knisternden Beats klingen nach etwas, das man fast vergessen hat."
+  },
+  {
+    "artist": "Portishead",
+    "album": "Dummy",
+    "year": 1994,
+    "genre": "Trip Hop",
+    "rating": 9,
+    "favorite_song": "Sour Times",
+    "songs": [
+      "Mysterons",
+      "Sour Times",
+      "Strangers",
+      "It Could Be Sweet",
+      "Wandering Star",
+      "It's a Fire",
+      "Numb",
+      "Roads",
+      "Pedestal",
+      "Biscuit",
+      "Glory Box"
+    ],
+    "review": "Beth Gibbons Stimme über Geoff Barrows filmischen Beats – das ist Trip Hop in seiner reinsten Form. Düster, sinnlich, unwiderstehlich. Glory Box ist ein perfekter Abschluss."
+  },
+  {
+    "artist": "Neutral Milk Hotel",
+    "album": "In the Aeroplane Over the Sea",
+    "year": 1998,
+    "genre": "Indie Folk / Lo-Fi",
+    "rating": 10,
+    "favorite_song": "Holland, 1945",
+    "songs": [
+      "The King of Carrot Flowers Pt. 1",
+      "The King of Carrot Flowers Pts. 2 & 3",
+      "In the Aeroplane Over the Sea",
+      "Two-Headed Boy",
+      "The Fool",
+      "Holland, 1945",
+      "Communist Daughter",
+      "Oh Comely",
+      "Ghost",
+      "Untitled",
+      "Two-Headed Boy Pt. 2"
+    ],
+    "review": "Schräg, roh, und trotzdem eines der berührendsten Alben überhaupt. Jeff Magnum singt über Anne Frank und existenzielle Liebe mit einer Intensität, die kaum auszuhalten ist. Holland, 1945 trifft jedes Mal."
+  },
+  {
+    "artist": "Aphex Twin",
+    "album": "Selected Ambient Works 85-92",
+    "year": 1992,
+    "genre": "Ambient Techno / IDM",
+    "rating": 9,
+    "favorite_song": "Xtal",
+    "songs": [
+      "Xtal",
+      "Tha",
+      "Pulsewidth",
+      "Ageispolis",
+      "i",
+      "Green Calx",
+      "Heliosphan",
+      "We Are the Music Makers",
+      "Schottkey 7th Path",
+      "Ptolemy",
+      "Actium"
+    ],
+    "review": "Richard D. James hat diese Tracks als Teenager aufgenommen. Das ist entweder deprimierend oder faszinierend – wahrscheinlich beides. Xtal ist einer der schönsten Eröffnungstracks der Elektronikgeschichte."
+  }
+]
