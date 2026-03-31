@@ -2,126 +2,195 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>plattenregal</title>
 <style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
   body {
-    font-family: "Courier New", Courier, monospace;
+    font-family: "Courier New", monospace;
     font-size: 14px;
-    margin: 24px 20px;
-    max-width: 680px;
     background: #fff;
     color: #000;
+    padding: 14px;
+    max-width: 700px;
+  }
+
+  h1 {
+    font-size: 17px;
+    font-weight: bold;
+    border-bottom: 2px solid #000;
+    padding-bottom: 3px;
+    margin-bottom: 2px;
+  }
+
+  p.sub {
+    font-size: 11px;
+    color: #777;
+    margin-bottom: 10px;
+  }
+
+  /* controls */
+  #controls {
+    font-size: 12px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+  }
+  #controls select, #controls input {
+    font-family: "Courier New", monospace;
+    font-size: 12px;
+    border: 1px solid #000;
+    padding: 2px 4px;
+    background: #fff;
+    max-width: 100%;
+  }
+  #controls input[type=text] { width: 130px; }
+
+  /* entries */
+  .entry {
+    border-top: 1px solid #ccc;
+    padding: 9px 0 7px 0;
+  }
+  .entry:last-child { border-bottom: 1px solid #ccc; }
+
+  .entry-head {
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 1.3;
+  }
+
+  .entry-meta {
+    font-size: 12px;
+    color: #555;
+    margin: 1px 0 4px 0;
+  }
+
+  .entry-review {
+    font-size: 13px;
+    margin-bottom: 5px;
+    line-height: 1.45;
+  }
+
+  .entry-songs {
+    font-size: 12px;
+    color: #222;
     line-height: 1.5;
+    word-break: break-word;
   }
 
-  a { color: #000; }
-
-  hr { border: none; border-top: 1px solid #000; margin: 12px 0; }
-
-  /* ── header ── */
-  #site-title { font-size: 18px; font-weight: bold; margin-bottom: 1px; }
-  #site-sub { font-size: 11px; color: #666; margin-bottom: 10px; }
-
-  /* ── controls ── */
-  #controls { margin-bottom: 12px; font-size: 13px; }
-  select, input[type=text], input[type=number], input[type=password] {
-    font-family: "Courier New", Courier, monospace;
-    font-size: 13px;
-    border: 1px solid #000;
-    padding: 1px 3px;
-    background: #fff;
-    color: #000;
+  .fav {
+    font-weight: bold;
   }
-  button {
-    font-family: "Courier New", Courier, monospace;
-    font-size: 13px;
-    border: 1px solid #000;
-    padding: 1px 7px;
-    background: #fff;
-    color: #000;
-    cursor: pointer;
+  .fav::after {
+    content: "★";
+    font-size: 11px;
+    vertical-align: super;
+    line-height: 0;
   }
-  button:hover { background: #000; color: #fff; }
 
-  /* ── entries ── */
-  .entry { padding: 10px 0 8px 0; border-bottom: 1px solid #ccc; }
-  .entry:first-child { border-top: 1px solid #ccc; }
-
-  .entry-head { font-weight: bold; font-size: 14px; }
-  .entry-meta { font-size: 12px; color: #444; margin-bottom: 4px; }
-  .entry-review { font-size: 13px; margin-bottom: 6px; }
-
-  .entry-songs { font-size: 12px; }
-  .entry-songs .fav { font-weight: bold; }
-  .entry-songs .fav::after { content: " [*]"; }
-
-  /* ── footer ── */
-  #footer { margin-top: 14px; font-size: 12px; color: #666; }
+  /* footer */
+  #footer {
+    margin-top: 12px;
+    font-size: 11px;
+    color: #888;
+    border-top: 1px dashed #ccc;
+    padding-top: 6px;
+  }
   #footer a { color: #000; }
+  #toggle-add { font-size: 12px; }
 
-  /* ── passwort overlay ── */
+  /* password overlay */
   #pw-overlay {
     display: none;
     position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(255,255,255,0.92);
-    z-index: 100;
+    inset: 0;
+    background: rgba(255,255,255,0.94);
+    z-index: 99;
   }
   #pw-box {
     position: absolute;
-    top: 100px; left: 50%; transform: translateX(-50%);
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
     background: #fff;
     border: 1px solid #000;
-    padding: 20px 24px;
+    padding: 18px 20px;
     font-size: 13px;
-    min-width: 260px;
+    width: 260px;
   }
   #pw-box b { display: block; margin-bottom: 10px; }
-  #pw-error { color: #000; font-size: 12px; margin-top: 6px; display: none; }
+  #pw-input { width: 140px; font-family: "Courier New", monospace; font-size: 13px; border: 1px solid #000; padding: 2px 4px; }
+  #pw-ok { font-family: "Courier New", monospace; font-size: 13px; border: 1px solid #000; padding: 2px 7px; background: #fff; cursor: pointer; margin-left: 5px; }
+  #pw-ok:hover { background: #000; color: #fff; }
+  #pw-error { color: #000; font-size: 11px; margin-top: 6px; display: none; }
 
-  /* ── add section ── */
-  #add-section { display: none; margin-top: 14px; font-size: 13px; }
-  .row { margin: 5px 0; }
-  .row label { display: inline-block; width: 120px; color: #000; }
+  /* add section */
+  #add-section { display: none; margin-top: 12px; font-size: 13px; border-top: 1px solid #000; padding-top: 10px; }
+  .row { margin: 5px 0; display: flex; flex-wrap: wrap; gap: 4px; align-items: baseline; }
+  .row label { width: 110px; font-size: 12px; color: #555; flex-shrink: 0; }
+  .row input, .row select { font-family: "Courier New", monospace; font-size: 12px; border: 1px solid #000; padding: 2px 4px; background: #fff; flex: 1; min-width: 0; max-width: 100%; }
 
-  #mb-results a { display: block; margin: 2px 0; font-size: 13px; cursor: pointer; }
+  button.action {
+    font-family: "Courier New", monospace;
+    font-size: 12px;
+    border: 1px solid #000;
+    padding: 2px 8px;
+    background: #fff;
+    cursor: pointer;
+  }
+  button.action:hover { background: #000; color: #fff; }
+
+  #mb-results { margin: 4px 0; }
+  #mb-results a { display: block; font-size: 12px; margin: 2px 0; cursor: pointer; }
   #mb-results a:hover { text-decoration: underline; }
 
   #song-radios {
-    max-height: 150px;
+    max-height: 140px;
     overflow-y: auto;
     border: 1px solid #ccc;
     padding: 4px 8px;
-    margin: 4px 0 10px 0;
-    font-size: 13px;
+    margin: 4px 0 8px 0;
+    font-size: 12px;
     line-height: 1.7;
   }
   #song-radios label { display: block; }
 
-  #status { font-size: 12px; color: #555; margin: 4px 0; }
-  #push-status { font-size: 12px; margin: 5px 0; }
+  #status { font-size: 11px; color: #666; margin: 3px 0; }
+  #push-status { font-size: 11px; margin: 5px 0; }
 
-  details summary { cursor: pointer; font-size: 12px; color: #555; }
+  details summary { cursor: pointer; font-size: 11px; color: #777; margin-bottom: 4px; }
   details summary:hover { color: #000; }
 
   textarea {
-    font-family: "Courier New", Courier, monospace;
-    font-size: 13px;
+    font-family: "Courier New", monospace;
+    font-size: 12px;
     border: 1px solid #000;
     padding: 3px;
     background: #fff;
-    color: #000;
+    width: 100%;
+    margin-top: 3px;
+  }
+
+  #gh-saved { font-size: 11px; color: #555; }
+
+  @media (max-width: 480px) {
+    body { font-size: 13px; padding: 10px; }
+    #controls input[type=text] { width: 110px; }
+    .row label { width: 90px; font-size: 11px; }
+    .entry-head { font-size: 13px; }
   }
 </style>
 </head>
 <body>
 
-<div id="site-title">plattenregal</div>
-<div id="site-sub">albenbewertungen. subjektiv. endgueltig.</div>
-<hr>
+<h1>plattenregal</h1>
+<p class="sub">albenbewertungen. subjektiv. endgueltig. ★ = lieblingssong</p>
 
 <div id="controls">
-  sortieren:
+  <span>sort:</span>
   <select id="sort-key">
     <option value="artist">artist</option>
     <option value="album">album</option>
@@ -130,11 +199,11 @@
     <option value="rating">wertung</option>
   </select>
   <select id="sort-dir">
-    <option value="1">aufsteigend</option>
-    <option value="-1">absteigend</option>
+    <option value="1">↑</option>
+    <option value="-1">↓</option>
   </select>
-  &nbsp;&nbsp;suche: <input type="text" id="search" size="16">
-  &nbsp;&nbsp;min: <select id="min-rating">
+  <input type="text" id="search" placeholder="suche...">
+  <select id="min-rating">
     <option value="0">alle</option>
     <option value="7">7+</option>
     <option value="8">8+</option>
@@ -146,122 +215,121 @@
 <div id="list"></div>
 
 <div id="footer">
-  [*] = lieblingssong &nbsp;&nbsp;
-  <a href="albums.json">albums.json</a> &nbsp;&nbsp;
-  <a href="#" id="toggle-add">[+ eintrag hinzufuegen]</a>
+  <a href="albums.json">albums.json</a> &nbsp;&mdash;&nbsp;
+  <a href="#" id="toggle-add">[+ eintrag]</a>
 </div>
 
-<!-- ══ PASSWORT ══ -->
+<!-- PASSWORD -->
 <div id="pw-overlay">
   <div id="pw-box">
-    <b>passwort erforderlich</b>
-    passwort: <input type="password" id="pw-input" size="20" autocomplete="off">
-    <button id="pw-ok" style="margin-left:6px">ok</button>
-    <div id="pw-error">falsches passwort.</div>
+    <b>passwort:</b>
+    <input type="password" id="pw-input" autocomplete="off">
+    <button id="pw-ok">ok</button>
+    <div id="pw-error">falsch.</div>
   </div>
 </div>
 
-<!-- ══ ADD SECTION ══ -->
+<!-- ADD SECTION -->
 <div id="add-section">
-  <hr>
-  <b>neuen eintrag hinzufuegen</b><br><br>
+  <b>neuer eintrag</b><br><br>
 
   <details>
     <summary>github einstellungen</summary>
-    <div style="margin-top:8px">
-      <div class="row"><label>token:</label> <input type="password" id="gh-token" size="34" placeholder="ghp_..."></div>
-      <div class="row"><label>user/repo:</label> <input type="text" id="gh-repo" size="26" placeholder="username/reponame"></div>
-      <div class="row"><label>branch:</label> <input type="text" id="gh-branch" size="12" placeholder="main"></div>
-      <div class="row"><label>pfad json:</label> <input type="text" id="gh-path" size="26" placeholder="albums.json"></div>
-      <button id="btn-save-gh">speichern</button>
-      <span id="gh-saved" style="display:none;font-size:12px;margin-left:8px">gespeichert.</span>
+    <div style="margin-top:6px">
+      <div class="row"><label>token:</label><input type="password" id="gh-token" placeholder="ghp_..."></div>
+      <div class="row"><label>user/repo:</label><input type="text" id="gh-repo" placeholder="name/repo"></div>
+      <div class="row"><label>branch:</label><input type="text" id="gh-branch" placeholder="main"></div>
+      <div class="row"><label>json-pfad:</label><input type="text" id="gh-path" placeholder="albums.json"></div>
+      <button class="action" id="btn-save-gh">speichern</button>
+      <span id="gh-saved" style="display:none;margin-left:8px">gespeichert.</span>
     </div>
   </details>
   <br>
 
-  <b>1. album suchen</b><br><br>
-  <div class="row"><label>kuenstler:</label> <input type="text" id="q-artist" size="22"></div>
-  <div class="row"><label>album:</label> <input type="text" id="q-album" size="22"> <button id="btn-search" style="margin-left:4px">suchen</button></div>
+  <b>1. suchen</b><br><br>
+  <div class="row"><label>kuenstler:</label><input type="text" id="q-artist"></div>
+  <div class="row"><label>album:</label><input type="text" id="q-album"></div>
+  <button class="action" id="btn-search" style="margin-top:5px">suchen</button>
   <div id="status"></div>
   <div id="mb-results"></div>
 
   <div id="form-section" style="display:none">
     <br><b>2. details</b><br><br>
-    <div class="row"><label>kuenstler:</label> <input type="text" id="f-artist" size="26" readonly style="background:#f5f5f5"></div>
-    <div class="row"><label>album:</label> <input type="text" id="f-album" size="26" readonly style="background:#f5f5f5"></div>
-    <div class="row"><label>jahr:</label> <input type="text" id="f-year" size="7" readonly style="background:#f5f5f5"></div>
-    <div class="row"><label>genre:</label> <input type="text" id="f-genre" size="26" placeholder="korrigieren falls noetig"></div>
-    <div class="row"><label>wertung (1-10):</label> <input type="number" id="f-rating" min="1" max="10" style="width:44px"></div>
+    <div class="row"><label>kuenstler:</label><input type="text" id="f-artist" readonly style="background:#f2f2f2"></div>
+    <div class="row"><label>album:</label><input type="text" id="f-album" readonly style="background:#f2f2f2"></div>
+    <div class="row"><label>jahr:</label><input type="text" id="f-year" readonly style="background:#f2f2f2;max-width:70px"></div>
+    <div class="row"><label>genre:</label><input type="text" id="f-genre" placeholder="anpassen"></div>
+    <div class="row"><label>wertung:</label><input type="number" id="f-rating" min="1" max="10" style="max-width:55px"></div>
     <br>
     <div id="song-section" style="display:none">
-      lieblingssong auswaehlen:<br>
+      lieblingssong:<br>
       <div id="song-radios"></div>
     </div>
     rezension:<br>
-    <textarea id="f-review" rows="3" style="width:98%;margin-top:4px"></textarea>
+    <textarea id="f-review" rows="3"></textarea>
     <br><br>
-    <button id="btn-push">speichern &amp; nach github schreiben</button>
+    <button class="action" id="btn-push">speichern + push zu github</button>
     <div id="push-status"></div>
   </div>
 </div>
 
 <script>
 const PW = "Hallo&Hallo123";
-let unlocked = sessionStorage.getItem("pr_unlocked") === "1";
+let unlocked = sessionStorage.getItem("pr_ok") === "1";
 let albums = [], selectedSongs = [], sortKey = "artist", sortDir = 1;
 
-// ── Render ──────────────────────────────────────────
+// render
 function render() {
   const q    = document.getElementById("search").value.toLowerCase();
   const minR = parseInt(document.getElementById("min-rating").value);
   let list = albums.filter(a =>
     a.rating >= minR &&
-    (!q || (a.artist + a.album + a.genre + a.year).toLowerCase().includes(q))
+    (!q || (a.artist+a.album+a.genre+a.year).toLowerCase().includes(q))
   );
-  list.sort((a, b) => {
+  list.sort((a,b) => {
     let va = a[sortKey], vb = b[sortKey];
     if (typeof va === "string") { va = va.toLowerCase(); vb = vb.toLowerCase(); }
     return va < vb ? -sortDir : va > vb ? sortDir : 0;
   });
   document.getElementById("list").innerHTML = list.length
     ? list.map(a => {
-        const songList = a.songs.map(s =>
-          s === a.favorite_song
-            ? `<span class="fav">${s}</span>`
-            : s
+        const songs = a.songs.map(s =>
+          s === a.favorite_song ? `<span class="fav">${s}</span>` : s
         ).join(", ");
         return `<div class="entry">`
           + `<div class="entry-head">${a.artist} &ndash; ${a.album} (${a.year})</div>`
-          + `<div class="entry-meta">${a.genre} &nbsp;|&nbsp; ${a.rating}/10</div>`
+          + `<div class="entry-meta">${a.genre} | ${a.rating}/10</div>`
           + `<div class="entry-review">${a.review}</div>`
-          + `<div class="entry-songs">Songs: ${songList}</div>`
+          + `<div class="entry-songs">${songs}</div>`
           + `</div>`;
       }).join("")
-    : `<div class="entry"><small>keine eintraege.</small></div>`;
+    : `<div class="entry" style="color:#888">keine eintraege.</div>`;
 }
 
-document.getElementById("sort-key").addEventListener("change", e => { sortKey = e.target.value; render(); });
-document.getElementById("sort-dir").addEventListener("change", e => { sortDir = parseInt(e.target.value); render(); });
+["sort-key","sort-dir","min-rating"].forEach(id =>
+  document.getElementById(id).addEventListener("change", e => {
+    if (id === "sort-key") sortKey = e.target.value;
+    if (id === "sort-dir") sortDir = parseInt(e.target.value);
+    render();
+  })
+);
 document.getElementById("search").addEventListener("input", render);
-document.getElementById("min-rating").addEventListener("change", render);
 
-(async function loadAlbums() {
-  try { albums = await (await fetch("albums.json?_=" + Date.now())).json(); }
-  catch(e) { albums = []; }
+(async () => {
+  try { albums = await (await fetch("albums.json?_="+Date.now())).json(); } catch(e) { albums=[]; }
   render();
 })();
 
-// ── Passwort ────────────────────────────────────────
+// password
 document.getElementById("toggle-add").addEventListener("click", e => {
   e.preventDefault();
-  if (unlocked) { toggleAdd(); }
-  else { document.getElementById("pw-overlay").style.display = "block"; document.getElementById("pw-input").focus(); }
+  if (unlocked) toggleAdd();
+  else { document.getElementById("pw-overlay").style.display="block"; document.getElementById("pw-input").focus(); }
 });
-
 function checkPw() {
   if (document.getElementById("pw-input").value === PW) {
     unlocked = true;
-    sessionStorage.setItem("pr_unlocked", "1");
+    sessionStorage.setItem("pr_ok","1");
     document.getElementById("pw-overlay").style.display = "none";
     document.getElementById("pw-input").value = "";
     document.getElementById("pw-error").style.display = "none";
@@ -271,25 +339,22 @@ function checkPw() {
     document.getElementById("pw-input").select();
   }
 }
-
 document.getElementById("pw-ok").addEventListener("click", checkPw);
-document.getElementById("pw-input").addEventListener("keydown", e => { if (e.key === "Enter") checkPw(); });
+document.getElementById("pw-input").addEventListener("keydown", e => { if(e.key==="Enter") checkPw(); });
 
 function toggleAdd() {
   const s = document.getElementById("add-section");
-  s.style.display = s.style.display === "none" ? "block" : "none";
-  if (s.style.display === "block") loadGh();
+  s.style.display = s.style.display==="none" ? "block" : "none";
+  if (s.style.display==="block") loadGh();
 }
 
-// ── GitHub settings ──────────────────────────────────
+// github settings
 function saveGh() {
-  localStorage.setItem("gh_token",  document.getElementById("gh-token").value.trim());
-  localStorage.setItem("gh_repo",   document.getElementById("gh-repo").value.trim());
-  localStorage.setItem("gh_branch", document.getElementById("gh-branch").value.trim() || "main");
-  localStorage.setItem("gh_path",   document.getElementById("gh-path").value.trim()   || "albums.json");
+  ["gh-token","gh-repo","gh-branch","gh-path"].forEach(id =>
+    localStorage.setItem(id.replace("-","_"), document.getElementById(id).value.trim() || (id==="gh-branch"?"main":id==="gh-path"?"albums.json":""))
+  );
   const s = document.getElementById("gh-saved");
-  s.style.display = "inline";
-  setTimeout(() => s.style.display = "none", 2000);
+  s.style.display="inline"; setTimeout(()=>s.style.display="none",2000);
 }
 function loadGh() {
   document.getElementById("gh-token").value  = localStorage.getItem("gh_token")  || "";
@@ -299,33 +364,36 @@ function loadGh() {
 }
 document.getElementById("btn-save-gh").addEventListener("click", saveGh);
 
-// ── MusicBrainz ──────────────────────────────────────
+// musicbrainz
 async function mbSearch() {
   const artist = document.getElementById("q-artist").value.trim();
   const album  = document.getElementById("q-album").value.trim();
   if (!artist && !album) return;
-  const status  = document.getElementById("status");
-  const results = document.getElementById("mb-results");
-  status.textContent = "suche...";
-  results.innerHTML  = "";
+  const st = document.getElementById("status");
+  document.getElementById("mb-results").innerHTML = "";
   document.getElementById("form-section").style.display = "none";
+  st.textContent = "suche...";
   try {
-    const q = encodeURIComponent(`${artist} ${album}`.trim());
-    const data = await (await fetch(`https://musicbrainz.org/ws/2/release/?query=${q}&fmt=json&limit=8`,
-      { headers: { "User-Agent": "plattenregal/1.0" } })).json();
-    status.textContent = data.releases.length ? `${data.releases.length} treffer:` : "nichts gefunden.";
-    results.innerHTML = data.releases.map(rel => {
-      const a  = (rel["artist-credit"]?.[0]?.name || "?").replace(/"/g, "&quot;");
-      const t  = rel.title.replace(/"/g, "&quot;");
-      const yr = (rel.date || "").slice(0, 4) || "?";
-      return `<a data-id="${rel.id}" data-artist="${a}" data-album="${t}" data-year="${yr}">&gt; ${a} &ndash; ${rel.title} (${yr})</a>`;
+    const data = await (await fetch(
+      `https://musicbrainz.org/ws/2/release/?query=${encodeURIComponent(artist+" "+album)}&fmt=json&limit=8`,
+      { headers:{"User-Agent":"plattenregal/1.0"} }
+    )).json();
+    st.textContent = data.releases.length ? `${data.releases.length} treffer:` : "nichts.";
+    document.getElementById("mb-results").innerHTML = data.releases.map(r => {
+      const a = (r["artist-credit"]?.[0]?.name||"?").replace(/"/g,"&quot;");
+      const t = r.title.replace(/"/g,"&quot;");
+      const y = (r.date||"").slice(0,4)||"?";
+      return `<a data-id="${r.id}" data-artist="${a}" data-album="${t}" data-year="${y}">&gt; ${a} &ndash; ${r.title} (${y})</a>`;
     }).join("");
-    results.querySelectorAll("a").forEach(el => el.addEventListener("click", () => mbSelect(el)));
-  } catch(e) { status.textContent = "fehler: " + e.message; }
+    document.getElementById("mb-results").querySelectorAll("a").forEach(el =>
+      el.addEventListener("click", () => mbSelect(el))
+    );
+  } catch(e) { st.textContent = "fehler: "+e.message; }
 }
 
 async function mbSelect(el) {
-  document.getElementById("status").textContent = "lade tracks...";
+  const st = document.getElementById("status");
+  st.textContent = "lade tracks...";
   document.getElementById("mb-results").innerHTML = "";
   document.getElementById("f-artist").value = el.dataset.artist;
   document.getElementById("f-album").value  = el.dataset.album;
@@ -333,74 +401,71 @@ async function mbSelect(el) {
   try {
     const data = await (await fetch(
       `https://musicbrainz.org/ws/2/release/${el.dataset.id}?inc=recordings+tags&fmt=json`,
-      { headers: { "User-Agent": "plattenregal/1.0" } }
+      { headers:{"User-Agent":"plattenregal/1.0"} }
     )).json();
     selectedSongs = [];
-    (data.media || []).forEach(m => (m.tracks || []).forEach(t => selectedSongs.push(t.title)));
-    const tags = (data.tags || []).sort((a, b) => b.count - a.count);
+    (data.media||[]).forEach(m => (m.tracks||[]).forEach(t => selectedSongs.push(t.title)));
+    const tags = (data.tags||[]).sort((a,b)=>b.count-a.count);
     if (tags.length) document.getElementById("f-genre").value = tags[0].name;
     document.getElementById("song-radios").innerHTML = selectedSongs.map(s =>
-      `<label><input type="radio" name="fav" value="${s.replace(/"/g, "&quot;")}"> ${s}</label>`
+      `<label><input type="radio" name="fav" value="${s.replace(/"/g,"&quot;")}"> ${s}</label>`
     ).join("");
     document.getElementById("song-section").style.display = "block";
     document.getElementById("form-section").style.display = "block";
-    document.getElementById("status").textContent = `${selectedSongs.length} tracks geladen.`;
-  } catch(e) { document.getElementById("status").textContent = "fehler: " + e.message; }
+    st.textContent = `${selectedSongs.length} tracks.`;
+  } catch(e) { st.textContent = "fehler: "+e.message; }
 }
 
 document.getElementById("btn-search").addEventListener("click", mbSearch);
-["q-album","q-artist"].forEach(id =>
-  document.getElementById(id).addEventListener("keydown", e => { if (e.key === "Enter") mbSearch(); })
+["q-artist","q-album"].forEach(id =>
+  document.getElementById(id).addEventListener("keydown", e => { if(e.key==="Enter") mbSearch(); })
 );
 
-// ── GitHub Push ──────────────────────────────────────
+// github push
 document.getElementById("btn-push").addEventListener("click", async () => {
-  const favEl  = document.querySelector('input[name="fav"]:checked');
+  const fav    = document.querySelector('input[name="fav"]:checked');
   const rating = parseInt(document.getElementById("f-rating").value);
   const ps     = document.getElementById("push-status");
-  if (!favEl)                               { ps.textContent = "fehler: keinen lieblingssong gewaehlt."; return; }
-  if (!rating || rating < 1 || rating > 10) { ps.textContent = "fehler: wertung 1-10 eingeben."; return; }
+  if (!fav)                               { ps.textContent="fehler: kein lieblingssong."; return; }
+  if (!rating||rating<1||rating>10)       { ps.textContent="fehler: wertung 1-10."; return; }
   const token  = localStorage.getItem("gh_token");
   const repo   = localStorage.getItem("gh_repo");
-  const branch = localStorage.getItem("gh_branch") || "main";
-  const path   = localStorage.getItem("gh_path")   || "albums.json";
-  if (!token || !repo) { ps.textContent = "fehler: github einstellungen fehlen."; return; }
+  const branch = localStorage.getItem("gh_branch")||"main";
+  const path   = localStorage.getItem("gh_path")||"albums.json";
+  if (!token||!repo) { ps.textContent="fehler: github einstellungen fehlen."; return; }
 
-  const newEntry = {
+  const entry = {
     artist: document.getElementById("f-artist").value,
     album:  document.getElementById("f-album").value,
-    year:   parseInt(document.getElementById("f-year").value) || document.getElementById("f-year").value,
+    year:   parseInt(document.getElementById("f-year").value)||document.getElementById("f-year").value,
     genre:  document.getElementById("f-genre").value,
-    rating, favorite_song: favEl.value,
+    rating, favorite_song: fav.value,
     songs:  selectedSongs,
     review: document.getElementById("f-review").value
   };
 
-  ps.textContent = "verbinde mit github...";
+  ps.textContent = "verbinde...";
   try {
-    const shaRes = await fetch(`https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`, {
-      headers: { Authorization: `token ${token}`, Accept: "application/vnd.github+json" }
+    const shaRes = await fetch(`https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`,
+      { headers:{Authorization:`token ${token}`,Accept:"application/vnd.github+json"} });
+    if (!shaRes.ok) throw new Error(`${shaRes.status} - token/repo falsch?`);
+    const {sha} = await shaRes.json();
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify([...albums,entry],null,2))));
+    const putRes = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`,{
+      method:"PUT",
+      headers:{Authorization:`token ${token}`,Accept:"application/vnd.github+json","Content-Type":"application/json"},
+      body:JSON.stringify({message:`add: ${entry.artist} - ${entry.album}`,content,sha,branch})
     });
-    if (!shaRes.ok) throw new Error(`${shaRes.status} - token oder repo falsch?`);
-    const { sha } = await shaRes.json();
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify([...albums, newEntry], null, 2))));
-    ps.textContent = "schreibe...";
-    const putRes = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
-      method: "PUT",
-      headers: { Authorization: `token ${token}`, Accept: "application/vnd.github+json", "Content-Type": "application/json" },
-      body: JSON.stringify({ message: `add: ${newEntry.artist} - ${newEntry.album}`, content, sha, branch })
-    });
-    if (!putRes.ok) { const err = await putRes.json(); throw new Error(err.message || putRes.status); }
-    albums.push(newEntry);
-    render();
-    ps.textContent = "gespeichert. ~30 sek bis github pages deployed.";
-    ["f-artist","f-album","f-year","f-genre","f-rating","f-review"].forEach(id => document.getElementById(id).value = "");
-    document.getElementById("song-radios").innerHTML = "";
-    document.getElementById("song-section").style.display = "none";
-    document.getElementById("form-section").style.display = "none";
-    document.getElementById("q-artist").value = document.getElementById("q-album").value = "";
-    selectedSongs = [];
-  } catch(e) { ps.textContent = "fehler: " + e.message; }
+    if (!putRes.ok) { const err=await putRes.json(); throw new Error(err.message||putRes.status); }
+    albums.push(entry); render();
+    ps.textContent = "fertig. ~30 sek bis live.";
+    ["f-artist","f-album","f-year","f-genre","f-rating","f-review"].forEach(id=>document.getElementById(id).value="");
+    document.getElementById("song-radios").innerHTML="";
+    document.getElementById("song-section").style.display="none";
+    document.getElementById("form-section").style.display="none";
+    document.getElementById("q-artist").value=document.getElementById("q-album").value="";
+    selectedSongs=[];
+  } catch(e) { ps.textContent="fehler: "+e.message; }
 });
 </script>
 </body>
