@@ -1,3 +1,27 @@
 [
-  
+  {
+    "artist": "Third Eye Blind",
+    "album": "Third Eye Blind",
+    "year": 1997,
+    "genre": "alternative rock",
+    "rating": 10,
+    "favorite_song": "Semi-Charmed Life",
+    "songs": [
+      "Losing a Whole Year",
+      "Narcolepsy",
+      "Semi-Charmed Life",
+      "Jumper",
+      "Graduate",
+      "How's It Going to Be",
+      "Thanks a Lot",
+      "Burning Man",
+      "Good for You",
+      "London",
+      "I Want You",
+      "The Background",
+      "Motorcycle Drive By",
+      "God of Wine"
+    ],
+    "review": "Wow Wow Wow, wie toll muss es sein eine US High School in den 90's zu besuchen!? Eines der besten Debut Alben ever. Ohne wenn und aber. Wow"
+  }
 ]
