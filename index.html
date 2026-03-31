@@ -257,7 +257,7 @@
 
 <div id="site-header">
   <h1><span>platten</span>regal</h1>
-  <p class="sub">albenbewertungen &mdash; subjektiv &mdash; endgueltig &mdash; ★ = lieblingssong</p>
+  <p class="sub">albenbewertungen, subjektiv aber objektiv</p>
 </div>
 
 <div id="controls">
@@ -297,6 +297,7 @@
     <b>// zugang //</b>
     <input type="password" id="pw-input" autocomplete="off" placeholder="passwort">
     <button id="pw-ok">ok</button>
+    <button id="pw-cancel" style="margin-left:4px;color:#888;border-color:#888">abbrechen</button>
     <div id="pw-error">falsch.</div>
   </div>
 </div>
@@ -411,6 +412,11 @@ function checkPw() {
   }
 }
 document.getElementById("pw-ok").addEventListener("click", checkPw);
+document.getElementById("pw-cancel").addEventListener("click", () => {
+  document.getElementById("pw-overlay").style.display="none";
+  document.getElementById("pw-input").value="";
+  document.getElementById("pw-error").style.display="none";
+});
 document.getElementById("pw-input").addEventListener("keydown", e => { if(e.key==="Enter") checkPw(); });
 function toggleAdd() {
   const s=document.getElementById("add-section");
