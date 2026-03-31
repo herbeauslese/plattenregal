@@ -112,5 +112,27 @@
       "Actium"
     ],
     "review": "Richard D. James hat diese Tracks als Teenager aufgenommen. Das ist entweder deprimierend oder faszinierend – wahrscheinlich beides. Xtal ist einer der schönsten Eröffnungstracks der Elektronikgeschichte."
+  },
+  {
+    "artist": "The Smiths",
+    "album": "The Smiths",
+    "year": 1984,
+    "genre": "alternative, new wave",
+    "rating": 9,
+    "favorite_song": "Still Ill",
+    "songs": [
+      "Reel Around the Fountain",
+      "You’ve Got Everything Now",
+      "Miserable Lie",
+      "Pretty Girls Make Graves",
+      "The Hand That Rocks the Cradle",
+      "This Charming Man",
+      "Still Ill",
+      "Hand in Glove",
+      "What Difference Does It Make?",
+      "I Don’t Owe You Anything",
+      "Suffer Little Children"
+    ],
+    "review": "test"
   }
 ]
