@@ -347,6 +347,7 @@
     <div class="row"><label>genre:</label><input type="text" id="f-genre" placeholder="anpassen" list="genre-list"></div>
     <datalist id="genre-list"></datalist>
     <div class="row"><label>wertung (1-10):</label><input type="number" id="f-rating" min="1" max="10" step="0.5" style="max-width:60px"></div>
+    <div class="row"><label>cover url:</label><input type="text" id="f-cover" placeholder="direkte bild-url (pflicht)" required></div>
     <br>
     <div id="song-section" style="display:none">
       <span style="font-size:12px">lieblingssong:</span><br>
@@ -418,48 +419,63 @@ function updateGenreList() {
 }
 
 // ── COVER ART (echte Farben, verpixelt) ──────────────
-const coverCache = {};
+const CACHE_PREFIX = "pr_cover_";
 
 function canvasId(a) {
   return "cv-" + (a.artist+a.album).replace(/[^a-zA-Z0-9]/g,"");
 }
 
-async function fetchAndDraw(a) {
-  const key = a.artist+"|"+a.album;
-  if (key in coverCache) return coverCache[key];
+function cacheKey(a) {
+  return CACHE_PREFIX + (a.artist+"|"+a.album).replace(/[^a-zA-Z0-9|]/g,"").slice(0,60);
+}
 
-  try {
-    const q = encodeURIComponent(`artist:"${a.artist}" release:"${a.album}"`);
-    const res = await fetch(
-      `https://musicbrainz.org/ws/2/release/?query=${q}&fmt=json&limit=1`,
-      { headers: {"User-Agent":"plattenregal/1.0"} }
-    );
-    const mbid = (await res.json()).releases?.[0]?.id;
-    if (!mbid) { coverCache[key]=null; return null; }
+async function getImageUrl(a) {
+  return a.cover_url || null;
+}
 
-    // weserv.nl setzt CORS-Header und liefert das Bild klein vor
-    const url = `https://images.weserv.nl/?url=coverartarchive.org/release/${mbid}/front-250&w=4&h=4&fit=cover&output=png`;
-    const img = await new Promise(resolve => {
-      const i = new Image();
-      i.crossOrigin = "anonymous";
-      i.onload  = () => resolve(i);
-      i.onerror = () => resolve(null);
-      i.src = url;
-    });
-    coverCache[key] = img;
-    return img;
-  } catch(e) { coverCache[key]=null; return null; }
+async function drawCover(canvas, url) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      const ctx = canvas.getContext("2d");
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(img, 0, 0, 4, 4);
+      // base64 in localStorage cachen
+      try {
+        const full = document.createElement("canvas");
+        full.width = full.height = 4;
+        full.getContext("2d").drawImage(img, 0, 0, 4, 4);
+        localStorage.setItem(cacheKey(canvas._album), full.toDataURL());
+      } catch(e) {}
+      resolve();
+    };
+    img.onerror = () => resolve();
+    img.src = url;
+  });
 }
 
 async function loadCovers(list) {
   for (const a of list) {
     const canvas = document.getElementById(canvasId(a));
     if (!canvas || canvas.dataset.loaded) continue;
-    const img = await fetchAndDraw(a);
-    if (!img) continue;
-    const ctx = canvas.getContext("2d");
-    ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(img, 0, 0, 4, 4);
+    canvas._album = a;
+
+    // aus localStorage-Cache laden wenn vorhanden
+    const cached = localStorage.getItem(cacheKey(a));
+    if (cached) {
+      const ctx = canvas.getContext("2d");
+      const img = new Image();
+      img.onload = () => { ctx.imageSmoothingEnabled=false; ctx.drawImage(img,0,0,4,4); };
+      img.src = cached;
+      canvas.dataset.loaded = "1";
+      continue;
+    }
+
+    // sonst frisch laden
+    const url = await getImageUrl(a);
+    if (!url) continue;
+    await drawCover(canvas, url);
     canvas.dataset.loaded = "1";
   }
 }
@@ -574,6 +590,8 @@ document.getElementById("btn-push").addEventListener("click", async () => {
   const ps=document.getElementById("push-status");
   if (!fav)                                           {ps.textContent="fehler: kein lieblingssong.";return;}
   if (isNaN(rating)||rating<1||rating>10||rating*2!==Math.round(rating*2)) {ps.textContent="fehler: wertung 1-10, nur .5 erlaubt.";return;}
+  const coverUrl=document.getElementById("f-cover").value.trim();
+  if (!coverUrl) {ps.textContent="fehler: cover url fehlt.";return;}
   const token=localStorage.getItem("gh_token");
   const repo=localStorage.getItem("gh_repo");
   const branch=localStorage.getItem("gh_branch")||"main";
@@ -585,7 +603,8 @@ document.getElementById("btn-push").addEventListener("click", async () => {
     year:parseInt(document.getElementById("f-year").value)||document.getElementById("f-year").value,
     genre:document.getElementById("f-genre").value,
     rating,favorite_song:fav.value,songs:selectedSongs,
-    review:document.getElementById("f-review").value
+    review:document.getElementById("f-review").value,
+    cover_url:coverUrl
   };
   ps.textContent="verbinde...";
   try {
@@ -602,7 +621,7 @@ document.getElementById("btn-push").addEventListener("click", async () => {
     if (!putRes.ok) {const err=await putRes.json();throw new Error(err.message||putRes.status);}
     albums.push(entry); render(); updateGenreList();
     ps.textContent="fertig. ~30 sek bis live.";
-    ["f-artist","f-album","f-year","f-genre","f-rating","f-review"].forEach(id=>document.getElementById(id).value="");
+    ["f-artist","f-album","f-year","f-genre","f-rating","f-review","f-cover"].forEach(id=>document.getElementById(id).value="");
     document.getElementById("song-radios").innerHTML="";
     document.getElementById("song-section").style.display="none";
     document.getElementById("form-section").style.display="none";
