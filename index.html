@@ -127,15 +127,13 @@
 
   /* eingeklappt: alle alben als kompakte zeile */
   .stack-peek:not(.open):not(.stack-single) .entry {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    display: block;
     padding: 5px 0;
     border-bottom: 1px solid #eee;
   }
-  .stack-peek:not(.open):not(.stack-single) .entry .entry-cover { width: 22px; height: 22px; margin: 0; flex-shrink: 0; }
-  .stack-peek:not(.open):not(.stack-single) .entry .entry-head { font-size: 13px; margin: 0; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .stack-peek:not(.open):not(.stack-single) .entry .entry-meta,
+  .stack-peek:not(.open):not(.stack-single) .entry .entry-cover { width: 22px; height: 22px; margin: 2px 8px 0 0; float: left; flex-shrink: 0; }
+  .stack-peek:not(.open):not(.stack-single) .entry .entry-head { font-size: 13px; margin: 0 0 1px 0; }
+  .stack-peek:not(.open):not(.stack-single) .entry .entry-meta { display: block; margin: 0; }
   .stack-peek:not(.open):not(.stack-single) .entry .entry-review,
   .stack-peek:not(.open):not(.stack-single) .entry .entry-songs,
   .stack-peek:not(.open):not(.stack-single) .entry > div[style] { display: none; }
