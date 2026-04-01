@@ -71,5 +71,23 @@
     ],
     "review": "Kennt das jemand? Aber egal, wie gut ist bitte dieser Opener? Hätten sie das Album nach dem beendet wäre es besser geworden, aber naja, der Rest ist jetzt auch nicht schlecht. Ich mags, aber es steht in einem sehr großen Schatten.",
     "cover_url": "https://upload.wikimedia.org/wikipedia/en/b/bc/Secondcomingroses.jpg"
+  },
+  {
+    "artist": "Angine de Poitrine",
+    "album": "Vol.1",
+    "year": 2024,
+    "genre": "experimental Rock, math Rock",
+    "rating": 8,
+    "favorite_song": "Tohogd",
+    "songs": [
+      "Sherpa",
+      "Tohogd",
+      "Tamebsz",
+      "Ababa Hotel",
+      "Sahardnieh",
+      "L’Aberek"
+    ],
+    "review": "In einer Welt bestehend aus Taylor Swift und Bruno Mars, ist das wie frischer Fahrtwind in einer warmen Sommernacht. (Wenn man vorher eine Emma genommen hat)\nJunge Leute, die was neues machen. Das ist Musik, auch wenn es komisch ist. ",
+    "cover_url": "https://i.discogs.com/5pE-Ne9GZ-XQGswuQxDOAShlnGU2lCusco2EqVEXvnA/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTMwOTk3/MzYwLTE3MjEwOTE5/NTgtMTUyMC5wbmc.jpeg"
   }
 ]
