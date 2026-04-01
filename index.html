@@ -15,6 +15,7 @@
     color: #000;
     padding: 16px 14px 40px 14px;
     max-width: 680px;
+    margin: 0 auto;
   }
 
   /* ── HEADER ── */
@@ -379,14 +380,15 @@
   <div class="row"><label>kuenstler:</label><input type="text" id="q-artist"></div>
   <div class="row"><label>album:</label><input type="text" id="q-album"></div>
   <button id="btn-search" style="margin-top:6px">suchen</button>
+  <button id="btn-manual" style="margin-top:6px;margin-left:6px;color:#888;border-color:#888">manuell eingeben</button>
   <div id="status"></div>
   <div id="mb-results"></div>
 
   <div id="form-section" style="display:none">
     <br><b style="font-size:12px">2. details</b><br><br>
-    <div class="row"><label>kuenstler:</label><input type="text" id="f-artist" readonly style="background:#f2f2f2"></div>
-    <div class="row"><label>album:</label><input type="text" id="f-album" readonly style="background:#f2f2f2"></div>
-    <div class="row"><label>jahr:</label><input type="text" id="f-year" readonly style="background:#f2f2f2;max-width:70px"></div>
+    <div class="row"><label>kuenstler:</label><input type="text" id="f-artist" style="background:#f2f2f2"></div>
+    <div class="row"><label>album:</label><input type="text" id="f-album" style="background:#f2f2f2"></div>
+    <div class="row"><label>jahr:</label><input type="text" id="f-year" style="background:#f2f2f2;max-width:70px"></div>
     <div class="row"><label>genre:</label><input type="text" id="f-genre" placeholder="anpassen" list="genre-list"></div>
     <datalist id="genre-list"></datalist>
     <div class="row"><label>wertung (1-10):</label><input type="number" id="f-rating" min="1" max="10" step="0.5" style="max-width:60px"></div>
@@ -395,6 +397,13 @@
     <div id="song-section" style="display:none">
       <span style="font-size:12px">lieblingssong:</span><br>
       <div id="song-radios"></div>
+    </div>
+    <div id="song-manual" style="display:none">
+      <span style="font-size:12px">songs (kommagetrennt):</span><br>
+      <textarea id="f-songs-manual" rows="2" style="margin-top:3px;width:98%" placeholder="Song 1, Song 2, Song 3, ..."></textarea>
+      <br><br>
+      <span style="font-size:12px">lieblingssong:</span><br>
+      <input type="text" id="f-fav-manual" style="width:98%" placeholder="exakt wie oben eingegeben"><br>
     </div>
     <span style="font-size:12px">rezension:</span><br>
     <textarea id="f-review" rows="3"></textarea>
@@ -672,23 +681,46 @@ async function mbSelect(el) {
     document.getElementById("song-radios").innerHTML=selectedSongs.map(s=>
       `<label><input type="radio" name="fav" value="${s.replace(/"/g,"&quot;")}"> ${s}</label>`
     ).join("");
+    document.getElementById("song-manual").style.display="none";
     document.getElementById("song-section").style.display="block";
     document.getElementById("form-section").style.display="block";
+    document.getElementById("form-section").dataset.mode="mb";
     st.textContent=`${selectedSongs.length} tracks geladen.`;
   } catch(e) { st.textContent="fehler: "+e.message; }
 }
 
 document.getElementById("btn-search").addEventListener("click", mbSearch);
+document.getElementById("btn-manual").addEventListener("click", () => {
+  document.getElementById("mb-results").innerHTML="";
+  document.getElementById("status").textContent="";
+  ["f-artist","f-album","f-year","f-genre","f-rating","f-cover","f-review"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("f-songs-manual").value="";
+  document.getElementById("f-fav-manual").value="";
+  document.getElementById("song-section").style.display="none";
+  document.getElementById("song-manual").style.display="block";
+  document.getElementById("form-section").style.display="block";
+  document.getElementById("form-section").dataset.mode="manual";
+  selectedSongs=[];
+});
 ["q-artist","q-album"].forEach(id=>
   document.getElementById(id).addEventListener("keydown",e=>{if(e.key==="Enter")mbSearch();})
 );
 
 // push
 document.getElementById("btn-push").addEventListener("click", async () => {
-  const fav=document.querySelector('input[name="fav"]:checked');
+  const isManual = document.getElementById("form-section").dataset.mode === "manual";
+  const fav = isManual
+    ? document.getElementById("f-fav-manual").value.trim()
+    : document.querySelector('input[name="fav"]:checked')?.value;
+  const songs = isManual
+    ? document.getElementById("f-songs-manual").value.split(",").map(s=>s.trim()).filter(Boolean)
+    : selectedSongs;
+
   const rating=parseFloat(document.getElementById("f-rating").value);
   const ps=document.getElementById("push-status");
   if (!fav)                                           {ps.textContent="fehler: kein lieblingssong.";return;}
+  if (isManual && !songs.length)                      {ps.textContent="fehler: keine songs eingegeben.";return;}
+  if (!isManual && !document.querySelector('input[name="fav"]:checked')) {ps.textContent="fehler: kein lieblingssong.";return;}
   if (isNaN(rating)||rating<1||rating>10||rating*2!==Math.round(rating*2)) {ps.textContent="fehler: wertung 1-10, nur .5 erlaubt.";return;}
   const coverUrl=document.getElementById("f-cover").value.trim();
   if (!coverUrl) {ps.textContent="fehler: cover url fehlt.";return;}
@@ -702,7 +734,7 @@ document.getElementById("btn-push").addEventListener("click", async () => {
     album:document.getElementById("f-album").value,
     year:parseInt(document.getElementById("f-year").value)||document.getElementById("f-year").value,
     genre:document.getElementById("f-genre").value,
-    rating,favorite_song:fav.value,songs:selectedSongs,
+    rating,favorite_song:fav,songs:songs,
     review:document.getElementById("f-review").value,
     cover_url:coverUrl
   };
@@ -722,9 +754,13 @@ document.getElementById("btn-push").addEventListener("click", async () => {
     albums.push(entry); render(); updateGenreList();
     ps.textContent="fertig. ~30 sek bis live.";
     ["f-artist","f-album","f-year","f-genre","f-rating","f-review","f-cover"].forEach(id=>document.getElementById(id).value="");
+    document.getElementById("f-songs-manual").value="";
+    document.getElementById("f-fav-manual").value="";
     document.getElementById("song-radios").innerHTML="";
     document.getElementById("song-section").style.display="none";
+    document.getElementById("song-manual").style.display="none";
     document.getElementById("form-section").style.display="none";
+    document.getElementById("form-section").dataset.mode="";
     document.getElementById("q-artist").value=document.getElementById("q-album").value="";
     selectedSongs=[];
   } catch(e) {ps.textContent="fehler: "+e.message;}
