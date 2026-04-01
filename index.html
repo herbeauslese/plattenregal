@@ -124,36 +124,56 @@
   }
   .entry:last-child { border-bottom: none; }
 
-  /* gestapelte vorschau */
+  /* gestapelte alben – eingeklappt */
   .stack-peek .entry {
-    display: block;
-    border-bottom: 1px solid #ccc;
-    max-height: 38px;
-    overflow: hidden;
-    opacity: 0.6;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
     pointer-events: none;
+    opacity: 0.5;
+    font-size: 12px;
+    overflow: hidden;
+    white-space: nowrap;
   }
-  .stack-peek .entry + .entry {
-    margin-top: -1px;
-    border-top: 1px dashed #ccc;
-    opacity: 0.35;
-  }
+  .stack-peek .entry canvas { width: 20px; height: 20px; flex-shrink: 0; }
+  .stack-peek .entry .entry-head { font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: 0; }
+  .stack-peek .entry .entry-rating { font-size: 10px; padding: 0 3px; }
+  .stack-peek .entry .entry-meta,
+  .stack-peek .entry .entry-review,
+  .stack-peek .entry .entry-songs,
+  .stack-peek .entry > div[style] { display: none; }
+
+  /* aufgeklappt – normal */
   .stack-peek.open .entry {
-    max-height: none;
-    overflow: visible;
-    opacity: 1;
-    pointer-events: auto;
+    display: block;
+    padding: 10px 0 8px 0;
     border-bottom: 1px solid #ccc;
+    pointer-events: auto;
+    opacity: 1;
+    font-size: 14px;
+    white-space: normal;
+    overflow: visible;
   }
+  .stack-peek.open .entry canvas { width: 44px; height: 44px; }
+  .stack-peek.open .entry .entry-head { font-size: 15px; margin-bottom: 2px; }
+  .stack-peek.open .entry .entry-rating { font-size: 11px; padding: 1px 5px; }
+  .stack-peek.open .entry .entry-meta,
+  .stack-peek.open .entry .entry-review,
+  .stack-peek.open .entry .entry-songs { display: block; }
+  .stack-peek.open .entry > div[style] { display: block; }
   .stack-peek.open .entry:last-child { border-bottom: none; }
 
-  /* einzelnes album (kein stack) immer offen */
+  /* einzelnes album – immer offen */
   .stack-peek.open-single .entry {
-    max-height: none;
-    overflow: visible;
-    opacity: 1;
-    pointer-events: auto;
+    display: block;
+    padding: 10px 0 8px 0;
     border-bottom: none;
+    pointer-events: auto;
+    opacity: 1;
+    white-space: normal;
+    overflow: visible;
   }
 
   .entry-head {
