@@ -93,16 +93,57 @@
   }
   button:hover { background: #000; color: #fff; }
 
-  /* ── ENTRIES ── */
-  #list { margin-top: 4px; }
+  /* ── ARTIST GROUPS ── */
+  .artist-group { margin-bottom: 6px; }
+  .artist-group:first-child .group-header { border-top: 1px solid #000; }
 
-  .entry {
-    padding: 12px 0 10px 0;
+  .group-header {
     border-bottom: 1px solid #000;
-    margin-bottom: 6px;
+    padding: 10px 0 8px 0;
+    cursor: default;
+  }
+  .group-header.collapsible { cursor: pointer; }
+  .group-header.collapsible:hover .group-artist { text-decoration: underline; }
+
+  .group-artist {
+    font-family: "Special Elite", "Courier New", monospace;
+    font-size: 15px;
+  }
+  .group-toggle {
+    font-size: 11px;
+    color: #888;
+    margin-left: 8px;
+    font-family: "Courier New", monospace;
+  }
+
+  /* einzelnes album im stack */
+  .entry {
+    padding: 10px 0 8px 0;
+    border-bottom: 1px solid #ccc;
     position: relative;
   }
-  #list .entry:first-child { border-top: 1px solid #000; }
+  .entry:last-child { border-bottom: none; }
+
+  /* gestapelte vorschau (nur erstes album sichtbar, rest per peek) */
+  .stack-peek {
+    overflow: hidden;
+    position: relative;
+  }
+  .stack-peek .entry { display: block; }
+  .stack-peek .entry + .entry {
+    margin-top: -1px;
+    border-top: 1px dashed #ccc;
+    max-height: 38px;
+    overflow: hidden;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  .stack-peek.open .entry + .entry {
+    max-height: none;
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .stack-peek.open .entry { border-bottom: 1px solid #ccc; }
 
   .entry-head {
     font-family: "Special Elite", "Courier New", monospace;
@@ -281,6 +322,7 @@
     <option value="year">jahr</option>
     <option value="genre">genre</option>
     <option value="rating">wertung</option>
+    <option value="index">datum</option>
   </select>
   <select id="sort-dir">
     <option value="1">↑</option>
@@ -366,36 +408,90 @@ const PW = "Hallo&Hallo123";
 let unlocked = sessionStorage.getItem("pr_ok") === "1";
 let albums = [], selectedSongs = [], sortKey = "artist", sortDir = 1;
 
+function entryHTML(a) {
+  const songs = a.songs.map(s =>
+    s === a.favorite_song ? `<span class="fav">${s}</span>` : s
+  ).join(", ");
+  const cid = "cv-" + (a.artist+a.album).replace(/[^a-zA-Z0-9]/g,"");
+  // genre: kommagetrennte tags
+  const genres = a.genre ? a.genre.split(",").map(g=>g.trim()).filter(Boolean).join(" &middot; ") : "";
+  return `<div class="entry">`
+    + `<canvas class="entry-cover" id="${cid}" width="4" height="4"></canvas>`
+    + `<div class="entry-head">${a.album}`
+    + `<span class="entry-rating">${Number(a.rating)}/10</span></div>`
+    + `<div class="entry-meta">${a.year}${genres ? " &nbsp;&middot;&nbsp; "+genres : ""}</div>`
+    + `<div class="entry-review">${a.review}</div>`
+    + `<div class="entry-songs">${songs}</div>`
+    + `<div style="clear:both"></div>`
+    + `</div>`;
+}
+
 function render() {
   const q    = document.getElementById("search").value.toLowerCase();
   const minR = parseInt(document.getElementById("min-rating").value);
-  let list = albums.filter(a =>
-    a.rating >= minR &&
-    (!q || (a.artist+a.album+a.genre+a.year).toLowerCase().includes(q))
-  );
-  list.sort((a,b) => {
-    let va = a[sortKey], vb = b[sortKey];
-    if (typeof va==="string") { va=va.toLowerCase(); vb=vb.toLowerCase(); }
-    return va<vb ? -sortDir : va>vb ? sortDir : 0;
-  });
-  document.getElementById("list").innerHTML = list.length
-    ? list.map(a => {
-        const songs = a.songs.map(s =>
-          s === a.favorite_song ? `<span class="fav">${s}</span>` : s
-        ).join(", ");
-        const cid = "cv-" + (a.artist+a.album).replace(/[^a-zA-Z0-9]/g,"");
-        return `<div class="entry">`
-          + `<canvas class="entry-cover" id="${cid}" width="4" height="4"></canvas>`
-          + `<div class="entry-head">${a.artist} &ndash; ${a.album}`
-          + `<span class="entry-rating">${Number(a.rating)}/10</span></div>`
-          + `<div class="entry-meta">${a.year} &nbsp;&middot;&nbsp; ${a.genre}</div>`
-          + `<div class="entry-review">${a.review}</div>`
-          + `<div class="entry-songs">${songs}</div>`
-          + `<div style="clear:both"></div>`
-          + `</div>`;
-      }).join("")
-    : `<div class="entry" style="color:#aaa;font-style:italic">keine eintraege.</div>`;
+
+  let list = albums
+    .map((a, i) => ({...a, index: i}))
+    .filter(a =>
+      a.rating >= minR &&
+      (!q || (a.artist+a.album+a.genre+a.year).toLowerCase().includes(q))
+    );
+
+  if (sortKey === "index") {
+    list.sort((a,b) => (a.index - b.index) * sortDir);
+  } else {
+    list.sort((a,b) => {
+      let va = a[sortKey], vb = b[sortKey];
+      if (typeof va==="string") { va=va.toLowerCase(); vb=vb.toLowerCase(); }
+      return va<vb ? -sortDir : va>vb ? sortDir : 0;
+    });
+  }
+
+  if (!list.length) {
+    document.getElementById("list").innerHTML =
+      `<div class="entry" style="color:#aaa;font-style:italic;border-top:1px solid #000;border-bottom:1px solid #000;padding:10px 0">keine eintraege.</div>`;
+    return;
+  }
+
+  // nach artist gruppieren (Reihenfolge der Gruppen = erster Treffer im sortierten Array)
+  const groups = [];
+  const groupMap = {};
+  for (const a of list) {
+    const key = a.artist.toLowerCase();
+    if (!groupMap[key]) {
+      groupMap[key] = { artist: a.artist, albums: [] };
+      groups.push(groupMap[key]);
+    }
+    groupMap[key].albums.push(a);
+  }
+
+  document.getElementById("list").innerHTML = groups.map(g => {
+    const multi = g.albums.length > 1;
+    const stackId = "grp-" + g.artist.replace(/[^a-zA-Z0-9]/g,"");
+    const headerClass = "group-header" + (multi ? " collapsible" : "");
+    const onClick = multi ? `onclick="toggleGroup('${stackId}')"` : "";
+    const toggle = multi ? `<span class="group-toggle" id="${stackId}-toggle">[+ ${g.albums.length} alben]</span>` : "";
+
+    return `<div class="artist-group">`
+      + `<div class="${headerClass}" ${onClick}>`
+      + `<span class="group-artist">${g.artist}</span>${toggle}`
+      + `</div>`
+      + `<div class="stack-peek${multi ? "" : " open"}" id="${stackId}">`
+      + g.albums.map(a => entryHTML(a)).join("")
+      + `</div>`
+      + `</div>`;
+  }).join("");
+
   loadCovers(list);
+}
+
+function toggleGroup(id) {
+  const el = document.getElementById(id);
+  const toggle = document.getElementById(id+"-toggle");
+  const isOpen = el.classList.contains("open");
+  el.classList.toggle("open");
+  const count = el.querySelectorAll(".entry").length;
+  toggle.textContent = isOpen ? `[+ ${count} alben]` : `[– ${count} alben]`;
 }
 
 ["sort-key","sort-dir","min-rating"].forEach(id =>
