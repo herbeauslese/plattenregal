@@ -156,20 +156,18 @@
     line-height: 0;
   }
 
-  /* ── COLOR PIXELS ── */
-  .cover-pixels {
-    display: inline-flex;
-    gap: 2px;
-    vertical-align: middle;
-    margin-left: 8px;
-  }
-  .cover-pixels span {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
+  /* ── COVER CANVAS ── */
+  .entry-cover {
+    display: block;
+    width: 48px;
+    height: 48px;
+    image-rendering: pixelated;
     border: 1px solid #ccc;
+    float: left;
+    margin: 2px 10px 6px 0;
+    flex-shrink: 0;
+    background: #eee;
   }
-
 
   #footer {
     margin-top: 16px;
@@ -384,18 +382,19 @@ function render() {
         const songs = a.songs.map(s =>
           s === a.favorite_song ? `<span class="fav">${s}</span>` : s
         ).join(", ");
-        const pid = "px-" + CSS.escape((a.artist+a.album).replace(/\s+/g,"_").replace(/[^a-zA-Z0-9_]/g,""));
+        const cid = "cv-" + (a.artist+a.album).replace(/[^a-zA-Z0-9]/g,"");
         return `<div class="entry">`
+          + `<canvas class="entry-cover" id="${cid}" width="8" height="8" title="${a.artist} – ${a.album}"></canvas>`
           + `<div class="entry-head">${a.artist} &ndash; ${a.album}`
-          + `<span class="entry-rating">${Number(a.rating)}/10</span>`
-          + `<span class="cover-pixels" id="${pid}"></span></div>`
+          + `<span class="entry-rating">${Number(a.rating)}/10</span></div>`
           + `<div class="entry-meta">${a.year} &nbsp;&middot;&nbsp; ${a.genre}</div>`
           + `<div class="entry-review">${a.review}</div>`
           + `<div class="entry-songs">${songs}</div>`
+          + `<div style="clear:both"></div>`
           + `</div>`;
       }).join("")
     : `<div class="entry" style="color:#aaa;font-style:italic">keine eintraege.</div>`;
-  loadPixels(list);
+  loadCovers(list);
 }
 
 ["sort-key","sort-dir","min-rating"].forEach(id =>
@@ -418,33 +417,17 @@ function updateGenreList() {
   document.getElementById("genre-list").innerHTML = genres.map(g => `<option value="${g}">`).join("");
 }
 
-// ── COVER PIXELS ─────────────────────────────────────
-const pixelCache = {};
+// ── COVER ART (verpixelt via Canvas) ─────────────────
+const coverCache = {};
 
-function pixelId(a) {
-  return "px-" + (a.artist+a.album).replace(/\s+/g,"_").replace(/[^a-zA-Z0-9_]/g,"");
+function canvasId(a) {
+  return "cv-" + (a.artist+a.album).replace(/[^a-zA-Z0-9]/g,"");
 }
 
-function samplePixels(img) {
-  const c = document.createElement("canvas");
-  c.width = c.height = 2;
-  const ctx = c.getContext("2d");
-  // draw scaled down to 2x2 — browser averages naturally
-  ctx.drawImage(img, 0, 0, 2, 2);
-  const d = ctx.getImageData(0, 0, 2, 2).data;
-  const colors = [];
-  for (let i = 0; i < 4; i++) {
-    const r = d[i*4], g = d[i*4+1], b = d[i*4+2];
-    colors.push(`rgb(${r},${g},${b})`);
-  }
-  return colors;
-}
+async function fetchCover(a) {
+  const key = a.artist + "|" + a.album;
+  if (key in coverCache) return coverCache[key];
 
-async function fetchPixels(a) {
-  const key = a.artist + a.album;
-  if (pixelCache[key]) return pixelCache[key];
-
-  // search MusicBrainz for release MBID
   try {
     const q = encodeURIComponent(`artist:"${a.artist}" release:"${a.album}"`);
     const res = await fetch(
@@ -453,33 +436,32 @@ async function fetchPixels(a) {
     );
     const data = await res.json();
     const mbid = data.releases?.[0]?.id;
-    if (!mbid) return null;
+    if (!mbid) { coverCache[key] = null; return null; }
 
-    // load cover image via Cover Art Archive (CORS-friendly)
     const imgUrl = `https://coverartarchive.org/release/${mbid}/front-250`;
-    const colors = await new Promise((resolve) => {
+    const result = await new Promise(resolve => {
       const img = new Image();
       img.crossOrigin = "anonymous";
-      img.onload = () => resolve(samplePixels(img));
+      img.onload = () => resolve(img);
       img.onerror = () => resolve(null);
       img.src = imgUrl;
     });
 
-    pixelCache[key] = colors;
-    return colors;
-  } catch(e) { return null; }
+    coverCache[key] = result;
+    return result;
+  } catch(e) { coverCache[key] = null; return null; }
 }
 
-async function loadPixels(list) {
+async function loadCovers(list) {
   for (const a of list) {
-    const el = document.getElementById(pixelId(a));
-    if (!el) continue;
-    // skip if already filled
-    if (el.children.length) continue;
-    const colors = await fetchPixels(a);
-    if (colors && el) {
-      el.innerHTML = colors.map(c => `<span style="background:${c}"></span>`).join("");
-    }
+    const canvas = document.getElementById(canvasId(a));
+    if (!canvas || canvas.dataset.loaded) continue;
+    const img = await fetchCover(a);
+    if (!img || !canvas) continue;
+    // draw onto 8x8 canvas → displayed at 48x48 via CSS → ~6x pixelation
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0, 8, 8);
+    canvas.dataset.loaded = "1";
   }
 }
 
