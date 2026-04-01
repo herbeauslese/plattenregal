@@ -421,7 +421,7 @@ function entryHTML(a) {
     + `<div class="entry-head">${a.album}`
     + `<span class="entry-rating">${Number(a.rating)}/10</span></div>`
     + `<div class="entry-meta">${a.year}${genres ? " &nbsp;&middot;&nbsp; "+genres : ""}</div>`
-    + `<div class="entry-review">${a.review}</div>`
+    + `<div class="entry-review">${a.review.replace(/\n/g,"<br>")}</div>`
     + `<div class="entry-songs">${songs}</div>`
     + `<div style="clear:both"></div>`
     + `</div>`;
