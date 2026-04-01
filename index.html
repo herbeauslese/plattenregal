@@ -124,26 +124,37 @@
   }
   .entry:last-child { border-bottom: none; }
 
-  /* gestapelte vorschau (nur erstes album sichtbar, rest per peek) */
-  .stack-peek {
+  /* gestapelte vorschau */
+  .stack-peek .entry {
+    display: block;
+    border-bottom: 1px solid #ccc;
+    max-height: 38px;
     overflow: hidden;
-    position: relative;
+    opacity: 0.6;
+    pointer-events: none;
   }
-  .stack-peek .entry { display: block; }
   .stack-peek .entry + .entry {
     margin-top: -1px;
     border-top: 1px dashed #ccc;
-    max-height: 38px;
-    overflow: hidden;
-    opacity: 0.5;
-    pointer-events: none;
+    opacity: 0.35;
   }
-  .stack-peek.open .entry + .entry {
+  .stack-peek.open .entry {
     max-height: none;
+    overflow: visible;
     opacity: 1;
     pointer-events: auto;
+    border-bottom: 1px solid #ccc;
   }
-  .stack-peek.open .entry { border-bottom: 1px solid #ccc; }
+  .stack-peek.open .entry:last-child { border-bottom: none; }
+
+  /* einzelnes album (kein stack) immer offen */
+  .stack-peek.open-single .entry {
+    max-height: none;
+    overflow: visible;
+    opacity: 1;
+    pointer-events: auto;
+    border-bottom: none;
+  }
 
   .entry-head {
     font-family: "Special Elite", "Courier New", monospace;
@@ -476,7 +487,7 @@ function render() {
       + `<div class="${headerClass}" ${onClick}>`
       + `<span class="group-artist">${g.artist}</span>${toggle}`
       + `</div>`
-      + `<div class="stack-peek${multi ? "" : " open"}" id="${stackId}">`
+      + `<div class="stack-peek${multi ? "" : " open-single"}" id="${stackId}">`
       + g.albums.map(a => entryHTML(a)).join("")
       + `</div>`
       + `</div>`;
