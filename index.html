@@ -158,15 +158,15 @@
 
   /* ── COVER CANVAS ── */
   .entry-cover {
-    display: block;
-    width: 48px;
-    height: 48px;
-    image-rendering: pixelated;
-    border: 1px solid #ccc;
     float: left;
-    margin: 2px 10px 6px 0;
-    flex-shrink: 0;
+    margin: 3px 10px 6px 0;
+    width: 44px;
+    height: 44px;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    border: 1px solid #ccc;
     background: #eee;
+    flex-shrink: 0;
   }
 
   #footer {
@@ -384,7 +384,7 @@ function render() {
         ).join(", ");
         const cid = "cv-" + (a.artist+a.album).replace(/[^a-zA-Z0-9]/g,"");
         return `<div class="entry">`
-          + `<canvas class="entry-cover" id="${cid}" width="8" height="8" title="${a.artist} – ${a.album}"></canvas>`
+          + `<canvas class="entry-cover" id="${cid}" width="4" height="4"></canvas>`
           + `<div class="entry-head">${a.artist} &ndash; ${a.album}`
           + `<span class="entry-rating">${Number(a.rating)}/10</span></div>`
           + `<div class="entry-meta">${a.year} &nbsp;&middot;&nbsp; ${a.genre}</div>`
@@ -417,50 +417,49 @@ function updateGenreList() {
   document.getElementById("genre-list").innerHTML = genres.map(g => `<option value="${g}">`).join("");
 }
 
-// ── COVER ART (verpixelt via Canvas) ─────────────────
+// ── COVER ART (echte Farben, verpixelt) ──────────────
 const coverCache = {};
 
 function canvasId(a) {
   return "cv-" + (a.artist+a.album).replace(/[^a-zA-Z0-9]/g,"");
 }
 
-async function fetchCover(a) {
-  const key = a.artist + "|" + a.album;
+async function fetchAndDraw(a) {
+  const key = a.artist+"|"+a.album;
   if (key in coverCache) return coverCache[key];
 
   try {
     const q = encodeURIComponent(`artist:"${a.artist}" release:"${a.album}"`);
     const res = await fetch(
       `https://musicbrainz.org/ws/2/release/?query=${q}&fmt=json&limit=1`,
-      { headers: { "User-Agent": "plattenregal/1.0" } }
+      { headers: {"User-Agent":"plattenregal/1.0"} }
     );
-    const data = await res.json();
-    const mbid = data.releases?.[0]?.id;
-    if (!mbid) { coverCache[key] = null; return null; }
+    const mbid = (await res.json()).releases?.[0]?.id;
+    if (!mbid) { coverCache[key]=null; return null; }
 
-    const imgUrl = `https://coverartarchive.org/release/${mbid}/front-250`;
-    const result = await new Promise(resolve => {
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-      img.onload = () => resolve(img);
-      img.onerror = () => resolve(null);
-      img.src = imgUrl;
+    // weserv.nl setzt CORS-Header und liefert das Bild klein vor
+    const url = `https://images.weserv.nl/?url=coverartarchive.org/release/${mbid}/front-250&w=4&h=4&fit=cover&output=png`;
+    const img = await new Promise(resolve => {
+      const i = new Image();
+      i.crossOrigin = "anonymous";
+      i.onload  = () => resolve(i);
+      i.onerror = () => resolve(null);
+      i.src = url;
     });
-
-    coverCache[key] = result;
-    return result;
-  } catch(e) { coverCache[key] = null; return null; }
+    coverCache[key] = img;
+    return img;
+  } catch(e) { coverCache[key]=null; return null; }
 }
 
 async function loadCovers(list) {
   for (const a of list) {
     const canvas = document.getElementById(canvasId(a));
     if (!canvas || canvas.dataset.loaded) continue;
-    const img = await fetchCover(a);
-    if (!img || !canvas) continue;
-    // draw onto 8x8 canvas → displayed at 48x48 via CSS → ~6x pixelation
+    const img = await fetchAndDraw(a);
+    if (!img) continue;
     const ctx = canvas.getContext("2d");
-    ctx.drawImage(img, 0, 0, 8, 8);
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(img, 0, 0, 4, 4);
     canvas.dataset.loaded = "1";
   }
 }
