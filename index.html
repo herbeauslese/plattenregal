@@ -419,7 +419,13 @@ function updateGenreList() {
 }
 
 // ── COVER ART (echte Farben, verpixelt) ──────────────
-const CACHE_PREFIX = "pr_cover_";
+// Cache-Version – bei Änderung an der Draw-Logik hochzählen → alter Cache wird geleert
+const CACHE_VERSION = "v3";
+const CACHE_PREFIX = "pr_cover_" + CACHE_VERSION + "_";
+if (!localStorage.getItem("pr_cache_version") || localStorage.getItem("pr_cache_version") !== CACHE_VERSION) {
+  Object.keys(localStorage).filter(k => k.startsWith("pr_cover_")).forEach(k => localStorage.removeItem(k));
+  localStorage.setItem("pr_cache_version", CACHE_VERSION);
+}
 
 function canvasId(a) {
   return "cv-" + (a.artist+a.album).replace(/[^a-zA-Z0-9]/g,"");
@@ -438,14 +444,63 @@ async function drawCover(canvas, url) {
     const img = new Image();
     img.crossOrigin = "anonymous";
     img.onload = () => {
+      // auf 64x64 zeichnen um genug Pixel zum Auswerten zu haben
+      const pre = document.createElement("canvas");
+      pre.width = pre.height = 64;
+      const pctx = pre.getContext("2d");
+      pctx.drawImage(img, 0, 0, 64, 64);
+
+      const idata = pctx.getImageData(0, 0, 64, 64);
+      const d = idata.data;
+      const total = 64 * 64;
+
+      // weißen Anteil messen
+      let whiteCount = 0;
+      for (let i = 0; i < d.length; i += 4) {
+        if (d[i] > 220 && d[i+1] > 220 && d[i+2] > 220) whiteCount++;
+      }
+      const whiteRatio = whiteCount / total; // z.B. 0.6 = 60% weiß
+
+      // weiße Pixel transparent machen → nicht-weiße Farben bleiben
+      for (let i = 0; i < d.length; i += 4) {
+        if (d[i] > 220 && d[i+1] > 220 && d[i+2] > 220) d[i+3] = 0;
+      }
+      pctx.putImageData(idata, 0, 0);
+
+      // auf 4x4 runterskalen (nur nicht-weiße Farben)
       const ctx = canvas.getContext("2d");
-      ctx.imageSmoothingEnabled = false;
-      ctx.drawImage(img, 0, 0, 4, 4);
-      // base64 in localStorage cachen
+      ctx.imageSmoothingEnabled = true;
+      ctx.clearRect(0, 0, 4, 4);
+      ctx.drawImage(pre, 0, 0, 4, 4);
+
+      // anteilig so viele der 16 Pixel weiß übermalen
+      const whitePx = Math.round(whiteRatio * 16);
+      if (whitePx > 0) {
+        // zufällige (aber deterministisch aus artist+album) Pixel-Positionen weiß setzen
+        const seed = (canvas._album.artist + canvas._album.album).split("").reduce((h,c) => (h*31 + c.charCodeAt(0)) >>> 0, 0);
+        const positions = [...Array(16).keys()];
+        // fisher-yates mit seed
+        let rng = seed;
+        for (let i = positions.length - 1; i > 0; i--) {
+          rng = (rng * 1664525 + 1013904223) >>> 0;
+          const j = rng % (i + 1);
+          [positions[i], positions[j]] = [positions[j], positions[i]];
+        }
+        const px = canvas.getContext("2d");
+        px.fillStyle = "#ffffff";
+        for (let i = 0; i < whitePx; i++) {
+          const x = positions[i] % 4;
+          const y = Math.floor(positions[i] / 4);
+          px.fillRect(x, y, 1, 1);
+        }
+      }
+
+      // gecachten Stand speichern
       try {
         const full = document.createElement("canvas");
         full.width = full.height = 4;
-        full.getContext("2d").drawImage(img, 0, 0, 4, 4);
+        const fctx = full.getContext("2d");
+        fctx.drawImage(canvas, 0, 0, 4, 4);
         localStorage.setItem(cacheKey(canvas._album), full.toDataURL());
       } catch(e) {}
       resolve();
