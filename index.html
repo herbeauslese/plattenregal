@@ -271,7 +271,8 @@
   .row label { width: 100px; font-size: 11px; color: #666; flex-shrink: 0; }
   .row input, .row select { flex: 1; min-width: 0; }
 
-  #mb-results { margin: 4px 0; }
+  #mb-results { margin: 4px 0; max-height: 168px; overflow-y: auto; border: 1px solid transparent; }
+  #mb-results:not(:empty) { border-color: #ccc; padding: 2px 0; }
   #mb-results a { display: block; font-size: 12px; margin: 2px 0; cursor: pointer; padding: 1px 0; }
   #mb-results a::before { content: "→ "; color: #aaa; }
   #mb-results a:hover { text-decoration: underline; }
@@ -404,7 +405,7 @@
 </div>
 
 <script>
-const PW = "Hallo&Hallo123";
+const PW_HASH = "ebc5fcca14a0cd1e62e741d1a413a2e9eb97f0322a09c2d8eb2b73768006d8bd";
 let unlocked = sessionStorage.getItem("pr_ok") === "1";
 let albums = [], selectedSongs = [], sortKey = "artist", sortDir = 1;
 
@@ -582,8 +583,11 @@ document.getElementById("toggle-add").addEventListener("click", e => {
   if (unlocked) toggleAdd();
   else { document.getElementById("pw-overlay").style.display="block"; document.getElementById("pw-input").focus(); }
 });
-function checkPw() {
-  if (document.getElementById("pw-input").value === PW) {
+async function checkPw() {
+  const val = document.getElementById("pw-input").value;
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(val));
+  const hash = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
+  if (hash === PW_HASH) {
     unlocked=true; sessionStorage.setItem("pr_ok","1");
     document.getElementById("pw-overlay").style.display="none";
     document.getElementById("pw-input").value="";
@@ -635,7 +639,7 @@ async function mbSearch() {
   st.textContent="suche...";
   try {
     const data=await (await fetch(
-      `https://musicbrainz.org/ws/2/release/?query=${encodeURIComponent(artist+" "+album)}&fmt=json&limit=8`,
+      `https://musicbrainz.org/ws/2/release/?query=${encodeURIComponent(artist+" "+album)}&fmt=json&limit=20`,
       {headers:{"User-Agent":"plattenregal/1.0"}}
     )).json();
     st.textContent=data.releases.length?`${data.releases.length} treffer:`:"nichts gefunden.";
