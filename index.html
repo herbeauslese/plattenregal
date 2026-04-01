@@ -420,7 +420,7 @@ function updateGenreList() {
 
 // ── COVER ART (echte Farben, verpixelt) ──────────────
 // Cache-Version – bei Änderung an der Draw-Logik hochzählen → alter Cache wird geleert
-const CACHE_VERSION = "v3";
+const CACHE_VERSION = "v5";
 const CACHE_PREFIX = "pr_cover_" + CACHE_VERSION + "_";
 if (!localStorage.getItem("pr_cache_version") || localStorage.getItem("pr_cache_version") !== CACHE_VERSION) {
   Object.keys(localStorage).filter(k => k.startsWith("pr_cover_")).forEach(k => localStorage.removeItem(k));
@@ -436,7 +436,9 @@ function cacheKey(a) {
 }
 
 async function getImageUrl(a) {
-  return a.cover_url || null;
+  if (!a.cover_url) return null;
+  // allorigins lädt server-seitig → kein CORS egal woher die URL stammt (Bandcamp, etc.)
+  return `https://api.allorigins.win/raw?url=${encodeURIComponent(a.cover_url)}`;
 }
 
 async function drawCover(canvas, url) {
@@ -505,7 +507,7 @@ async function drawCover(canvas, url) {
       } catch(e) {}
       resolve();
     };
-    img.onerror = () => resolve();
+    img.onerror = () => { console.error("cover load fehler:", url); resolve(); };
     img.src = url;
   });
 }
@@ -529,7 +531,8 @@ async function loadCovers(list) {
 
     // sonst frisch laden
     const url = await getImageUrl(a);
-    if (!url) continue;
+    if (!url) { console.warn("cover: keine url für", a.artist, a.album); continue; }
+    console.log("cover laden:", url);
     await drawCover(canvas, url);
     canvas.dataset.loaded = "1";
   }
