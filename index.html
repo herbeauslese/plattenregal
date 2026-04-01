@@ -156,7 +156,21 @@
     line-height: 0;
   }
 
-  /* ── FOOTER ── */
+  /* ── COLOR PIXELS ── */
+  .cover-pixels {
+    display: inline-flex;
+    gap: 2px;
+    vertical-align: middle;
+    margin-left: 8px;
+  }
+  .cover-pixels span {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border: 1px solid #ccc;
+  }
+
+
   #footer {
     margin-top: 16px;
     font-size: 11px;
@@ -370,15 +384,18 @@ function render() {
         const songs = a.songs.map(s =>
           s === a.favorite_song ? `<span class="fav">${s}</span>` : s
         ).join(", ");
+        const pid = "px-" + CSS.escape((a.artist+a.album).replace(/\s+/g,"_").replace(/[^a-zA-Z0-9_]/g,""));
         return `<div class="entry">`
           + `<div class="entry-head">${a.artist} &ndash; ${a.album}`
-          + `<span class="entry-rating">${Number(a.rating)}/10</span></div>`
+          + `<span class="entry-rating">${Number(a.rating)}/10</span>`
+          + `<span class="cover-pixels" id="${pid}"></span></div>`
           + `<div class="entry-meta">${a.year} &nbsp;&middot;&nbsp; ${a.genre}</div>`
           + `<div class="entry-review">${a.review}</div>`
           + `<div class="entry-songs">${songs}</div>`
           + `</div>`;
       }).join("")
     : `<div class="entry" style="color:#aaa;font-style:italic">keine eintraege.</div>`;
+  loadPixels(list);
 }
 
 ["sort-key","sort-dir","min-rating"].forEach(id =>
@@ -399,6 +416,71 @@ document.getElementById("search").addEventListener("input", render);
 function updateGenreList() {
   const genres = [...new Set(albums.map(a => a.genre).filter(Boolean))].sort();
   document.getElementById("genre-list").innerHTML = genres.map(g => `<option value="${g}">`).join("");
+}
+
+// ── COVER PIXELS ─────────────────────────────────────
+const pixelCache = {};
+
+function pixelId(a) {
+  return "px-" + (a.artist+a.album).replace(/\s+/g,"_").replace(/[^a-zA-Z0-9_]/g,"");
+}
+
+function samplePixels(img) {
+  const c = document.createElement("canvas");
+  c.width = c.height = 2;
+  const ctx = c.getContext("2d");
+  // draw scaled down to 2x2 — browser averages naturally
+  ctx.drawImage(img, 0, 0, 2, 2);
+  const d = ctx.getImageData(0, 0, 2, 2).data;
+  const colors = [];
+  for (let i = 0; i < 4; i++) {
+    const r = d[i*4], g = d[i*4+1], b = d[i*4+2];
+    colors.push(`rgb(${r},${g},${b})`);
+  }
+  return colors;
+}
+
+async function fetchPixels(a) {
+  const key = a.artist + a.album;
+  if (pixelCache[key]) return pixelCache[key];
+
+  // search MusicBrainz for release MBID
+  try {
+    const q = encodeURIComponent(`artist:"${a.artist}" release:"${a.album}"`);
+    const res = await fetch(
+      `https://musicbrainz.org/ws/2/release/?query=${q}&fmt=json&limit=1`,
+      { headers: { "User-Agent": "plattenregal/1.0" } }
+    );
+    const data = await res.json();
+    const mbid = data.releases?.[0]?.id;
+    if (!mbid) return null;
+
+    // load cover image via Cover Art Archive (CORS-friendly)
+    const imgUrl = `https://coverartarchive.org/release/${mbid}/front-250`;
+    const colors = await new Promise((resolve) => {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => resolve(samplePixels(img));
+      img.onerror = () => resolve(null);
+      img.src = imgUrl;
+    });
+
+    pixelCache[key] = colors;
+    return colors;
+  } catch(e) { return null; }
+}
+
+async function loadPixels(list) {
+  for (const a of list) {
+    const el = document.getElementById(pixelId(a));
+    if (!el) continue;
+    // skip if already filled
+    if (el.children.length) continue;
+    const colors = await fetchPixels(a);
+    if (colors && el) {
+      el.innerHTML = colors.map(c => `<span style="background:${c}"></span>`).join("");
+    }
+  }
 }
 
 // password
