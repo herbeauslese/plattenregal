@@ -571,7 +571,7 @@ function entryMusicHTML(a) {
 // ── RENDER TRAVEL ─────────────────────────────────────
 function entryTravelHTML(t) {
   const coverHtml = t.cover_url
-    ? `<img class="entry-cover-photo" src="${t.cover_url}" alt="${t.city}">`
+    ? `<img class="entry-cover-photo" src="${t.cover_url}" alt="">`
     : `<div class="entry-cover-photo"></div>`;
   const tips = (t.tips||[]).filter(Boolean);
   return `<div class="entry">`
