@@ -362,7 +362,7 @@
 <!-- HEADER -->
 <div id="site-header">
   <h1 id="site-h1"><span>platten</span>regal</h1>
-  <p class="sub" id="site-sub">albenbewertungen &mdash; subjektiv &mdash; endgueltig &mdash; ★ = lieblingssong</p>
+  <p class="sub" id="site-sub">albenbewertungen &mdash; subjektiv, objektiv</p>
 </div>
 
 <!-- CONTROLS -->
@@ -652,7 +652,7 @@ function render() {
     const headerClass = "group-header" + (multi ? " collapsible" : "");
     const onClick = multi ? `onclick="toggleGroup('${stackId}','${toggleLabel}')"` : "";
     const avgBadge = multi && !isTravel
-      ? `<span class="entry-rating" style="margin-left:8px;font-size:10px">&empty; ${g.avgRating}</span>`
+      ? `<span style="font-size:11px;font-family:'Courier New',monospace;margin-left:8px;color:#555">&empty; ${g.avgRating}</span>`
       : "";
     const toggle = multi ? `<span class="group-toggle" id="${stackId}-toggle">[+ ${g.items.length} ${toggleLabel}]</span>` : "";
     const htmlFn = isTravel ? entryTravelHTML : entryMusicHTML;
