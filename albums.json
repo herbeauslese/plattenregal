@@ -1,19 +1,204 @@
 [
   {
-    "city": "Krakau",
-    "country": "Polen",
-    "time": "Oktober 2025",
-    "population": "800k",
-    "tagline": "schick, authentisch, cozy",
-    "rating": 9,
-    "tips": [
-      "Historisches Kreativ-Viertel Kazimierz",
-      "Prunkvoller Rathhausplatz",
-      "Günstig SecondHand shoppen",
-      "Die Burg erklimmen",
-      "lecker Baumstriezel essen"
+    "artist": "Third Eye Blind",
+    "album": "Third Eye Blind",
+    "year": 1997,
+    "genre": "alternative rock",
+    "rating": 10,
+    "favorite_song": "Semi-Charmed Life",
+    "songs": [
+      "Losing a Whole Year",
+      "Narcolepsy",
+      "Semi-Charmed Life",
+      "Jumper",
+      "Graduate",
+      "How's It Going to Be",
+      "Thanks a Lot",
+      "Burning Man",
+      "Good for You",
+      "London",
+      "I Want You",
+      "The Background",
+      "Motorcycle Drive By",
+      "God of Wine"
     ],
-    "review": "test",
-    "cover_url": "krakau.jpg"
+    "review": "Wow Wow Wow, wie toll muss es sein eine US High School in den 90's zu besuchen!? Eines der besten Debut Alben ever. Ohne wenn und aber. Wow",
+    "cover_url": "https://upload.wikimedia.org/wikipedia/en/d/da/Third_eye_blind_self_titled.jpg"
+  },
+  {
+    "artist": "The Stone Roses",
+    "album": "The Stone Roses",
+    "year": 1989,
+    "genre": "Madchester, Britpop",
+    "rating": 9.5,
+    "favorite_song": "I Wanna Be Adored",
+    "songs": [
+      "I Wanna Be Adored",
+      "She Bangs the Drums",
+      "Waterfall",
+      "Don't Stop",
+      "Bye Bye Badman",
+      "Elizabeth My Dear",
+      "(Song for My) Sugar Spun Sister",
+      "Made of Stone",
+      "Shoot You Down",
+      "This Is the One",
+      "I Am the Resurrection"
+    ],
+    "review": "Das beste Debut Album jemals. Leider (fast) auch ihr einziges. Oasis für die Bildungsschicht. Einzigartig.",
+    "cover_url": "https://upload.wikimedia.org/wikipedia/en/f/ff/Stoneroses.jpg"
+  },
+  {
+    "artist": "The Stone Roses",
+    "album": "Second Coming",
+    "year": 1994,
+    "genre": "Madchester, Britpop",
+    "rating": 6.5,
+    "favorite_song": "Breaking Into Heaven",
+    "songs": [
+      "Breaking Into Heaven",
+      "Driving South",
+      "Ten Storey Love Song",
+      "Daybreak",
+      "Your Star Will Shine",
+      "Straight to the Man",
+      "Begging You",
+      "Tightrope",
+      "Good Times",
+      "Tears",
+      "How Do You Sleep",
+      "Love Spreads"
+    ],
+    "review": "Kennt das jemand? Aber egal, wie gut ist bitte dieser Opener? Hätten sie das Album nach dem beendet wäre es besser geworden, aber naja, der Rest ist jetzt auch nicht schlecht. Ich mags, aber es steht in einem sehr großen Schatten.",
+    "cover_url": "https://upload.wikimedia.org/wikipedia/en/b/bc/Secondcomingroses.jpg"
+  },
+  {
+    "artist": "Angine de Poitrine",
+    "album": "Vol.1",
+    "year": 2024,
+    "genre": "experimental Rock, math Rock",
+    "rating": 8,
+    "favorite_song": "Tohogd",
+    "songs": [
+      "Sherpa",
+      "Tohogd",
+      "Tamebsz",
+      "Ababa Hotel",
+      "Sahardnieh",
+      "L’Aberek"
+    ],
+    "review": "In einer Welt bestehend aus Taylor Swift und Bruno Mars, ist das wie frischer Fahrtwind in einer warmen Sommernacht. (Wenn man vorher eine Emma genommen hat)\nJunge Leute, die was neues machen. Das ist Musik, auch wenn es komisch ist. ",
+    "cover_url": "https://images.teepublic.com/derived/production/designs/87712002_0/1770916623/i_p:c_eae0c7,s_630,q_90.jpg"
+  },
+  {
+    "artist": "Dire Straits",
+    "album": "Communiqué",
+    "year": 1979,
+    "genre": "Rock, Bluesrock",
+    "rating": 8.5,
+    "favorite_song": "Lady Writer",
+    "songs": [
+      "Once Upon a Time in the West",
+      "News",
+      "Where Do You Think You’re Going?",
+      "Communiqué",
+      "Lady Writer",
+      "Angel of Mercy",
+      "Portobello Belle",
+      "Single‐Handed Sailor",
+      "Follow Me Home"
+    ],
+    "review": "Dieses Album muss die Definition von \"stimmig\" sein. Es ist wie ein großer Song, aber trotzdem wird es nicht langweilig. \nIch weiß nicht, ob das Wort underrated in Verbindung mit den Dire Straits überhaupt verwendet werden darf, aber dieses Album ist underrated und meiner Meinung nach, das beste der Band. ",
+    "cover_url": "https://www.stashrecords.com.au/cdn/shop/files/CamScanner06-21-202315.44_7a8f6e83-1186-4eae-a302-32f96fa6d042.jpg?v=1717053217"
+  },
+  {
+    "artist": "Wunderhorse",
+    "album": "Cub",
+    "year": 2022,
+    "genre": "Alternative Rock, Indie-Rock",
+    "rating": 9,
+    "favorite_song": "Teal",
+    "songs": [
+      "Butterflies",
+      "Leader of the Pack",
+      "Purple",
+      "Atlantis",
+      "17",
+      "Teal",
+      "Poppy",
+      "Mantis",
+      "Girl behind the Glass",
+      "Morphine",
+      "Epilogue"
+    ],
+    "review": "Warum ist diese Band nicht bekannter? Naja ich als alter gatekeeper bin ja eigentlich ganz froh drüber. Aber trotzdem, das ist eins der schönsten und emotionalen Alben ever. Wer bei \"Teal\" nicht weinen und tanzen muss, hat die Musik nie geliebt. Sag ich jetzt einfach mal so. \nHört mehr Wunderhorse, aber behaltet es für euch!",
+    "cover_url": "https://assets.mmsrg.com/isr/166325/c1/-/ASSET_MMS_146702367/fee_786_587_png"
+  },
+  {
+    "artist": "The Velvet Underground",
+    "album": "Loaded",
+    "year": 1987,
+    "genre": "rock, rop-rock, folk-rock",
+    "rating": 7,
+    "favorite_song": "Rock & Roll",
+    "songs": [
+      "Who Loves the Sun",
+      "Sweet Jane",
+      "Rock & Roll",
+      "Cool It Down",
+      "New Age",
+      "Head Held High",
+      "Lonesome Cowboy Bill",
+      "I Found a Reason",
+      "Train Round the Bend",
+      "Oh! Sweet Nuthin’"
+    ],
+    "review": "Meine erste ausgiebige Erfahrung mit The Velvet Underground. Oft bezeichnet als die \"Urväter des Alternatives\" oder so ähnlich. Jedenfalls sind sie in der Szene sehr hoch angesehen...und ich verstehe schon warum. \nFür mich sind es die besseren Beatles. Vielleicht einfach weil ich die Beatles nicht mag, aber auch weil sie ein bisschen mehr edgy sind, ein bisschen mehr von der norm abweichend. Einfach ein bisschen mehr Alternative. \nDas Album ist gut, es ist divers, es macht Spaß, aber es ist auch kein Brett. ",
+    "cover_url": "https://upload.wikimedia.org/wikipedia/en/7/71/Loadedalbum.jpg"
+  },
+  {
+    "artist": "Fontaines D.C.",
+    "album": "Romance",
+    "year": 2024,
+    "genre": "Alternative Rock, Indie-Rock",
+    "rating": 9,
+    "favorite_song": "Favourite",
+    "songs": [
+      "Romance",
+      "Starbuster",
+      "Here's the Thing",
+      "Desire",
+      "In the Modern World",
+      "Bug",
+      "Motorcycle Boy",
+      "Sundowner",
+      "Horseness Is the Whatness",
+      "Death Kink",
+      "Favourite"
+    ],
+    "review": "Ich wusste, dass das Album gut ist, aber als ich es gerade nochmal gehört hab hats mich echt umgehauen. Irland hat mal wieder gekocht. Was haben die mit der Musik?\nEinfach ein stimmiges, emotionales, kreatives, besonderes Album. Es ist zeitlos. \nDanke Irland, dass du uns so gute moderne Musik schenkst!\n\nP.S.: Warum haten alle das Cover? Ist doch stark!",
+    "cover_url": "https://upload.wikimedia.org/wikipedia/en/thumb/3/31/Romance_Fontaines_D.C._album_cover.jpg/250px-Romance_Fontaines_D.C._album_cover.jpg"
+  },
+  {
+    "artist": "Fontaines D.C.",
+    "album": "Skinty Fia",
+    "year": 2022,
+    "genre": "Alternative Rock, Indie-Rock/Pop",
+    "rating": 8.5,
+    "favorite_song": "Jackie Down the Line",
+    "songs": [
+      "In ár gCroíthe go deo",
+      "Big Shot",
+      "How Cold Love Is",
+      "Jackie Down the Line",
+      "Bloomsday",
+      "Roman Holiday",
+      "The Couple Across the Way",
+      "Skinty Fia",
+      "I Love You",
+      "Nabokov"
+    ],
+    "review": "Ein bisschen \"düsterer\" als die neuen Sachen würde ich sagen. Das macht es aber nicht schlechter. \nDa sind ein paar wirklich GUTE Songs drauf. \"I Love You\" ist eine Liebeserklärung an Irland und eine Anprangerung zur selben Zeit. Der Song sollte in Schulen gelehrt werden. Wow. \nNabokov ist ein geiler Closer. \nAll in All ein tolles Album, aber nicht ganz so konstant wie andere ihrer Werke. ",
+    "cover_url": "https://upload.wikimedia.org/wikipedia/en/d/df/Fontaines_D.C._-_Skinty_Fia.png"
   }
 ]
