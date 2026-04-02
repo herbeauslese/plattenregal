@@ -223,7 +223,7 @@
   .entry-tips span { display: block; }
   .entry-tips span::before { content: "→ "; color: #aaa; }
 
-  /* cover pixel canvas */
+  /* cover pixel canvas (musik) */
   .entry-cover {
     float: left;
     margin: 3px 10px 6px 0;
@@ -234,6 +234,25 @@
     border: 1px solid #ccc;
     background: #eee;
     flex-shrink: 0;
+  }
+
+  /* cover foto (reise) */
+  .entry-cover-photo {
+    float: left;
+    margin: 3px 10px 6px 0;
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border: 1px solid #ccc;
+    background: #eee;
+    flex-shrink: 0;
+  }
+
+  /* eingeklappt: reisefoto auch kleiner */
+  .stack-peek:not(.open):not(.stack-single) .entry .entry-cover-photo {
+    width: 22px;
+    height: 22px;
+    margin: 2px 8px 0 0;
   }
 
   .fav { font-weight: bold; text-decoration: underline; text-underline-offset: 2px; }
@@ -551,10 +570,12 @@ function entryMusicHTML(a) {
 
 // ── RENDER TRAVEL ─────────────────────────────────────
 function entryTravelHTML(t) {
-  const cid = "cv-" + (t.city+t.country).replace(/[^a-zA-Z0-9]/g,"");
+  const coverHtml = t.cover_url
+    ? `<img class="entry-cover-photo" src="${t.cover_url}" alt="${t.city}">`
+    : `<div class="entry-cover-photo"></div>`;
   const tips = (t.tips||[]).filter(Boolean);
   return `<div class="entry">`
-    + `<canvas class="entry-cover" id="${cid}" width="4" height="4"></canvas>`
+    + coverHtml
     + `<div class="entry-head">${t.city} <span style="font-weight:normal;font-size:12px;font-family:'Courier New',monospace">${t.tagline||""}</span><span class="entry-rating">${Number(t.rating)}/10</span></div>`
     + `<div class="entry-meta">${t.time||""} · ${t.country||""}${t.population ? " · "+t.population+" Einw." : ""}</div>`
     + `<div class="entry-review">${(t.review||"").replace(/\n/g,"<br>")}</div>`
@@ -628,13 +649,15 @@ function render() {
       + `</div></div>`;
   }).join("");
 
-  // cover laden
-  const coverList = list.map(x => ({
-    _cacheKey: isTravel ? x.city+"|"+x.country : x.artist+"|"+x.album,
-    _canvasId: "cv-" + (isTravel ? x.city+x.country : x.artist+x.album).replace(/[^a-zA-Z0-9]/g,""),
-    cover_url: x.cover_url
-  }));
-  loadCovers(coverList);
+  // pixel-cover nur im musikmodus
+  if (!isTravel) {
+    const coverList = list.map(x => ({
+      _cacheKey: x.artist+"|"+x.album,
+      _canvasId: "cv-" + (x.artist+x.album).replace(/[^a-zA-Z0-9]/g,""),
+      cover_url: x.cover_url
+    }));
+    loadCovers(coverList);
+  }
 }
 
 function toggleGroup(id, label) {
