@@ -362,7 +362,7 @@
 <!-- HEADER -->
 <div id="site-header">
   <h1 id="site-h1"><span>platten</span>regal</h1>
-  <p class="sub" id="site-sub">albenbewertungen - subjektiv, objektiv &mdash;</p>
+  <p class="sub" id="site-sub">albenbewertungen &mdash; subjektiv &mdash; endgueltig &mdash; ★ = lieblingssong</p>
 </div>
 
 <!-- CONTROLS -->
@@ -580,7 +580,7 @@ function entryTravelHTML(t) {
     + `<div class="entry-head">${t.city} <span style="font-weight:normal;font-size:12px;font-family:'Courier New',monospace">${t.tagline||""}</span><span class="entry-rating">${Number(t.rating)}/10</span></div>`
     + `<div class="entry-meta">${t.time||""} · ${t.country||""}${t.population ? " · "+t.population+" Einw." : ""}</div>`
     + `<div class="entry-review">${(t.review||"").replace(/\n/g,"<br>")}</div>`
-    + (tips.length ? `<div class="entry-tips">${tips.map(tip=>`<span>${tip}</span>`).join("")}</div>` : "")
+    + (tips.length ? `<div class="entry-tips"><span style="font-weight:bold;text-transform:uppercase;font-size:10px;letter-spacing:0.5px;color:#555;display:block;margin-bottom:2px">Top-Tipps</span>${tips.map(tip=>`<span>${tip}</span>`).join("")}</div>` : "")
     + `<div style="clear:both"></div>`
     + `</div>`;
 }
@@ -634,6 +634,16 @@ function render() {
     groupMap[key].items.push(x);
   }
 
+  // Durchschnittswertung pro Gruppe berechnen
+  for (const g of groups) {
+    g.avgRating = Math.round((g.items.reduce((s,x) => s + Number(x.rating), 0) / g.items.length) * 10) / 10;
+  }
+
+  // bei Wertungssortierung: Gruppen nach Durchschnitt sortieren
+  if (sk === "rating") {
+    groups.sort((a,b) => (b.avgRating - a.avgRating) * sortDir);
+  }
+
   const toggleLabel = isTravel ? "reisen" : "alben";
 
   document.getElementById("list").innerHTML = groups.map(g => {
@@ -641,10 +651,13 @@ function render() {
     const stackId = "grp-" + g.label.replace(/[^a-zA-Z0-9]/g,"");
     const headerClass = "group-header" + (multi ? " collapsible" : "");
     const onClick = multi ? `onclick="toggleGroup('${stackId}','${toggleLabel}')"` : "";
+    const avgBadge = multi && !isTravel
+      ? `<span class="entry-rating" style="margin-left:8px;font-size:10px">&empty; ${g.avgRating}</span>`
+      : "";
     const toggle = multi ? `<span class="group-toggle" id="${stackId}-toggle">[+ ${g.items.length} ${toggleLabel}]</span>` : "";
     const htmlFn = isTravel ? entryTravelHTML : entryMusicHTML;
     return `<div class="artist-group">`
-      + `<div class="${headerClass}" ${onClick}><span class="group-artist">${g.label}</span>${toggle}</div>`
+      + `<div class="${headerClass}" ${onClick}><span class="group-artist">${g.label}</span>${avgBadge}${toggle}</div>`
       + `<div class="stack-peek${multi ? "" : " stack-single"}" id="${stackId}">`
       + g.items.map(x => htmlFn(x)).join("")
       + `</div></div>`;
