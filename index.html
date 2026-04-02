@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>plattenregal</title>
+<title>regal</title>
 <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -18,15 +18,54 @@
     margin: 0 auto;
   }
 
+  /* ── MODE SWITCH ── */
+  #mode-switch {
+    font-size: 11px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #999;
+  }
+  #mode-switch span { cursor: pointer; }
+  #mode-switch span.active { color: #000; font-weight: bold; }
+  #mode-switch span:hover { color: #000; }
+
+  /* toggle pill */
+  #mode-toggle {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+  #mode-toggle input { display: none; }
+  #mode-toggle .pill {
+    position: absolute;
+    inset: 0;
+    background: #ccc;
+    border: 1px solid #000;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  #mode-toggle .pill::after {
+    content: "";
+    position: absolute;
+    width: 12px; height: 12px;
+    background: #000;
+    top: 2px; left: 2px;
+    transition: left 0.15s;
+  }
+  #mode-toggle input:checked + .pill { background: #000; }
+  #mode-toggle input:checked + .pill::after { left: 20px; background: #fff; }
+
   /* ── HEADER ── */
   #site-header {
     border: 2px solid #000;
     border-bottom: 4px solid #000;
     padding: 10px 12px 8px 12px;
     margin-bottom: 14px;
-    position: relative;
   }
-
   h1 {
     font-family: "Special Elite", "Courier New", monospace;
     font-size: 28px;
@@ -34,7 +73,6 @@
     letter-spacing: 2px;
     line-height: 1;
   }
-
   h1 span {
     display: inline-block;
     background: #000;
@@ -42,7 +80,6 @@
     padding: 0 5px;
     margin-right: 2px;
   }
-
   p.sub {
     font-size: 11px;
     color: #555;
@@ -62,7 +99,6 @@
     border: 1px solid #000;
     padding: 6px 8px;
   }
-
   #controls::before {
     content: "// filter";
     font-size: 10px;
@@ -71,7 +107,6 @@
     display: block;
     margin-bottom: 2px;
   }
-
   select, input[type=text], input[type=number], input[type=password], textarea {
     font-family: "Courier New", monospace;
     font-size: 12px;
@@ -80,9 +115,7 @@
     background: #fff;
     color: #000;
   }
-
   #controls input[type=text] { width: 120px; }
-
   button {
     font-family: "Courier New", monospace;
     font-size: 12px;
@@ -94,10 +127,8 @@
   }
   button:hover { background: #000; color: #fff; }
 
-
-  /* ── ARTIST GROUPS ── */
+  /* ── ARTIST / CITY GROUPS ── */
   .artist-group:first-child .group-header { border-top: 1px solid #000; }
-
   .group-header {
     border-bottom: 1px solid #000;
     padding: 8px 0 6px 0;
@@ -105,7 +136,6 @@
   }
   .group-header.collapsible { cursor: pointer; }
   .group-header.collapsible:hover .group-artist { text-decoration: underline; }
-
   .group-artist {
     font-family: "Special Elite", "Courier New", monospace;
     font-size: 15px;
@@ -126,7 +156,7 @@
   .artist-group:last-child .entry:last-child,
   .stack-single .entry { border-bottom: 1px solid #000; }
 
-  /* eingeklappt: alle alben als kompakte zeile */
+  /* eingeklappt */
   .stack-peek:not(.open):not(.stack-single) .entry {
     display: block;
     padding: 5px 0;
@@ -137,13 +167,12 @@
   .stack-peek:not(.open):not(.stack-single) .entry .entry-meta { display: block; margin: 0; }
   .stack-peek:not(.open):not(.stack-single) .entry .entry-review,
   .stack-peek:not(.open):not(.stack-single) .entry .entry-songs,
+  .stack-peek:not(.open):not(.stack-single) .entry .entry-tips,
   .stack-peek:not(.open):not(.stack-single) .entry > div[style] { display: none; }
   .stack-peek:not(.open):not(.stack-single) .entry:last-child { border-bottom: none; }
 
-  /* aufgeklappt: normal */
+  /* offen */
   .stack-peek.open .entry { display: block; }
-
-  /* einzelnes album – immer voll */
   .stack-single .entry { display: block; }
 
   .entry-head {
@@ -152,7 +181,6 @@
     line-height: 1.3;
     margin-bottom: 2px;
   }
-
   .entry-rating {
     display: inline-block;
     background: #000;
@@ -163,7 +191,6 @@
     font-family: "Courier New", monospace;
     vertical-align: middle;
   }
-
   .entry-meta {
     font-size: 11px;
     color: #666;
@@ -171,13 +198,11 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
-
   .entry-review {
     font-size: 13px;
     line-height: 1.5;
     margin-bottom: 6px;
   }
-
   .entry-songs {
     font-size: 11px;
     color: #333;
@@ -186,19 +211,19 @@
     padding-left: 8px;
   }
 
-  .fav {
-    font-weight: bold;
-    text-decoration: underline;
-    text-underline-offset: 2px;
+  /* reise: top-tipps */
+  .entry-tips {
+    font-size: 11px;
+    color: #333;
+    line-height: 1.8;
+    border-left: 2px solid #ddd;
+    padding-left: 8px;
+    margin-top: 4px;
   }
-  .fav::after {
-    content: "★";
-    font-size: 10px;
-    vertical-align: super;
-    line-height: 0;
-  }
+  .entry-tips span { display: block; }
+  .entry-tips span::before { content: "→ "; color: #aaa; }
 
-  /* ── COVER CANVAS ── */
+  /* cover pixel canvas */
   .entry-cover {
     float: left;
     margin: 3px 10px 6px 0;
@@ -211,6 +236,10 @@
     flex-shrink: 0;
   }
 
+  .fav { font-weight: bold; text-decoration: underline; text-underline-offset: 2px; }
+  .fav::after { content: "★"; font-size: 10px; vertical-align: super; line-height: 0; }
+
+  /* ── FOOTER ── */
   #footer {
     margin-top: 16px;
     font-size: 11px;
@@ -235,9 +264,7 @@
   }
   #pw-box {
     position: absolute;
-    top: 80px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 80px; left: 50%; transform: translateX(-50%);
     background: #fff;
     border: 2px solid #000;
     border-bottom: 4px solid #000;
@@ -248,7 +275,7 @@
   #pw-box b { display: block; margin-bottom: 10px; font-size: 14px; }
   #pw-input { width: 130px; }
   #pw-ok { margin-left: 5px; }
-  #pw-error { font-size: 11px; margin-top: 6px; display: none; color: #000; }
+  #pw-error { font-size: 11px; margin-top: 6px; display: none; }
 
   /* ── ADD SECTION ── */
   #add-section {
@@ -258,7 +285,6 @@
     padding: 12px;
     font-size: 13px;
   }
-
   #add-section > b {
     display: block;
     font-family: "Special Elite", "Courier New", monospace;
@@ -267,39 +293,31 @@
     padding-bottom: 6px;
     border-bottom: 1px dashed #000;
   }
-
   .row { margin: 5px 0; display: flex; flex-wrap: wrap; gap: 4px; align-items: baseline; }
   .row label { width: 100px; font-size: 11px; color: #666; flex-shrink: 0; }
   .row input, .row select { flex: 1; min-width: 0; }
 
   #mb-results { margin: 4px 0; max-height: 168px; overflow-y: auto; border: 1px solid transparent; }
   #mb-results:not(:empty) { border-color: #ccc; padding: 2px 0; }
-  #mb-results a { display: block; font-size: 12px; margin: 2px 0; cursor: pointer; padding: 1px 0; }
+  #mb-results a { display: block; font-size: 12px; margin: 2px 0; cursor: pointer; padding: 1px 4px; }
   #mb-results a::before { content: "→ "; color: #aaa; }
   #mb-results a:hover { text-decoration: underline; }
 
   #song-radios {
-    max-height: 150px;
-    overflow-y: auto;
+    max-height: 150px; overflow-y: auto;
     border: 1px solid #ccc;
-    padding: 4px 8px;
-    margin: 4px 0 10px 0;
-    font-size: 12px;
-    line-height: 1.8;
+    padding: 4px 8px; margin: 4px 0 10px 0;
+    font-size: 12px; line-height: 1.8;
   }
   #song-radios label { display: block; }
 
   #status { font-size: 11px; color: #888; margin: 4px 0; font-style: italic; }
   #push-status { font-size: 11px; margin: 6px 0; }
-
   details summary { cursor: pointer; font-size: 11px; color: #888; padding: 2px 0; }
   details summary:hover { color: #000; }
-
   textarea { width: 100%; margin-top: 3px; }
-
   #gh-saved { font-size: 11px; color: #555; margin-left: 8px; display: none; }
 
-  /* ── MOBILE ── */
   @media (max-width: 480px) {
     h1 { font-size: 22px; }
     .entry-head { font-size: 14px; }
@@ -311,16 +329,28 @@
 </head>
 <body>
 
-<div id="site-header">
-  <h1><span>platten</span>regal</h1>
-  <p class="sub">albenbewertungen &mdash; subjektiv &mdash; endgueltig &mdash; ★ = lieblingssong</p>
+<!-- MODE SWITCH -->
+<div id="mode-switch">
+  <span id="lbl-music" class="active">plattenregal</span>
+  <label id="mode-toggle">
+    <input type="checkbox" id="mode-cb">
+    <span class="pill"></span>
+  </label>
+  <span id="lbl-travel">reiseregal</span>
 </div>
 
+<!-- HEADER -->
+<div id="site-header">
+  <h1 id="site-h1"><span>platten</span>regal</h1>
+  <p class="sub" id="site-sub">albenbewertungen &mdash; subjektiv &mdash; endgueltig &mdash; ★ = lieblingssong</p>
+</div>
+
+<!-- CONTROLS -->
 <div id="controls">
   <span style="font-size:11px;color:#888">sort:</span>
   <select id="sort-key">
-    <option value="artist">artist</option>
-    <option value="album">album</option>
+    <option value="primary">artist</option>
+    <option value="secondary">album</option>
     <option value="year">jahr</option>
     <option value="genre">genre</option>
     <option value="rating">wertung</option>
@@ -343,9 +373,9 @@
 <div id="list"></div>
 
 <div id="footer">
-  <a href="albums.json">albums.json</a>
+  <a href="#" id="footer-json">albums.json</a>
   <a href="#" id="toggle-add">[+ eintrag]</a>
-  <span class="hint">★ = lieblingssong</span>
+  <span class="hint" id="footer-hint">★ = lieblingssong</span>
 </div>
 
 <!-- PASSWORD -->
@@ -361,7 +391,7 @@
 
 <!-- ADD SECTION -->
 <div id="add-section">
-  <b>// neuer eintrag //</b>
+  <b id="add-title">// neuer eintrag //</b>
 
   <details>
     <summary>github einstellungen</summary>
@@ -376,83 +406,191 @@
   </details>
   <br>
 
-  <b style="font-size:12px">1. album suchen</b><br><br>
-  <div class="row"><label>kuenstler:</label><input type="text" id="q-artist"></div>
-  <div class="row"><label>album:</label><input type="text" id="q-album"></div>
-  <button id="btn-search" style="margin-top:6px">suchen</button>
-  <button id="btn-manual" style="margin-top:6px;margin-left:6px;color:#888;border-color:#888">manuell eingeben</button>
-  <div id="status"></div>
-  <div id="mb-results"></div>
+  <!-- MUSIK FORM -->
+  <div id="music-form">
+    <b style="font-size:12px">1. album suchen</b><br><br>
+    <div class="row"><label>kuenstler:</label><input type="text" id="q-artist"></div>
+    <div class="row"><label>album:</label><input type="text" id="q-album"></div>
+    <button id="btn-search" style="margin-top:6px">suchen</button>
+    <button id="btn-manual" style="margin-top:6px;margin-left:6px;color:#888;border-color:#888">manuell</button>
+    <div id="status"></div>
+    <div id="mb-results"></div>
 
-  <div id="form-section" style="display:none">
-    <br><b style="font-size:12px">2. details</b><br><br>
-    <div class="row"><label>kuenstler:</label><input type="text" id="f-artist" style="background:#f2f2f2"></div>
-    <div class="row"><label>album:</label><input type="text" id="f-album" style="background:#f2f2f2"></div>
-    <div class="row"><label>jahr:</label><input type="text" id="f-year" style="background:#f2f2f2;max-width:70px"></div>
-    <div class="row"><label>genre:</label><input type="text" id="f-genre" placeholder="anpassen" list="genre-list"></div>
-    <datalist id="genre-list"></datalist>
-    <div class="row"><label>wertung (1-10):</label><input type="number" id="f-rating" min="1" max="10" step="0.5" style="max-width:60px"></div>
-    <div class="row"><label>cover url:</label><input type="text" id="f-cover" placeholder="direkte bild-url (pflicht)" required></div>
-    <br>
-    <div id="song-section" style="display:none">
-      <span style="font-size:12px">lieblingssong:</span><br>
-      <div id="song-radios"></div>
-    </div>
-    <div id="song-manual" style="display:none">
-      <span style="font-size:12px">songs (kommagetrennt):</span><br>
-      <textarea id="f-songs-manual" rows="2" style="margin-top:3px;width:98%" placeholder="Song 1, Song 2, Song 3, ..."></textarea>
+    <div id="form-section" style="display:none">
+      <br><b style="font-size:12px">2. details</b><br><br>
+      <div class="row"><label>kuenstler:</label><input type="text" id="f-artist" style="background:#f2f2f2"></div>
+      <div class="row"><label>album:</label><input type="text" id="f-album" style="background:#f2f2f2"></div>
+      <div class="row"><label>jahr:</label><input type="text" id="f-year" style="background:#f2f2f2;max-width:70px"></div>
+      <div class="row"><label>genre:</label><input type="text" id="f-genre" placeholder="anpassen" list="genre-list"></div>
+      <datalist id="genre-list"></datalist>
+      <div class="row"><label>wertung (1-10):</label><input type="number" id="f-rating" min="1" max="10" step="0.5" style="max-width:60px"></div>
+      <div class="row"><label>cover url:</label><input type="text" id="f-cover" placeholder="direkte bild-url (pflicht)"></div>
+      <br>
+      <div id="song-section" style="display:none">
+        <span style="font-size:12px">lieblingssong:</span><br>
+        <div id="song-radios"></div>
+      </div>
+      <div id="song-manual" style="display:none">
+        <span style="font-size:12px">songs (kommagetrennt):</span><br>
+        <textarea id="f-songs-manual" rows="2" placeholder="Song 1, Song 2, Song 3, ..."></textarea>
+        <br><br>
+        <span style="font-size:12px">lieblingssong:</span><br>
+        <input type="text" id="f-fav-manual" placeholder="exakt wie oben eingegeben">
+        <br>
+      </div>
+      <br>
+      <span style="font-size:12px">rezension:</span><br>
+      <textarea id="f-review" rows="3"></textarea>
       <br><br>
-      <span style="font-size:12px">lieblingssong:</span><br>
-      <input type="text" id="f-fav-manual" style="width:98%" placeholder="exakt wie oben eingegeben"><br>
+      <button id="btn-push-music">speichern + push zu github</button>
+      <div id="push-status-music"></div>
     </div>
-    <span style="font-size:12px">rezension:</span><br>
-    <textarea id="f-review" rows="3"></textarea>
+  </div>
+
+  <!-- REISE FORM -->
+  <div id="travel-form" style="display:none">
+    <b style="font-size:12px">neue reise</b><br><br>
+    <div class="row"><label>stadt:</label><input type="text" id="t-city"></div>
+    <div class="row"><label>land:</label><input type="text" id="t-country"></div>
+    <div class="row"><label>reisezeit:</label><input type="text" id="t-time" placeholder="z.B. März 2024"></div>
+    <div class="row"><label>einwohner:</label><input type="text" id="t-pop" placeholder="z.B. 3,7 Mio."></div>
+    <div class="row"><label>in 3 worten:</label><input type="text" id="t-tagline" placeholder="laut, bunt, lebendig"></div>
+    <div class="row"><label>wertung (1-10):</label><input type="number" id="t-rating" min="1" max="10" step="0.5" style="max-width:60px"></div>
+    <div class="row"><label>titelbild:</label><input type="text" id="t-cover" placeholder="covers/berlin.jpg oder volle url"></div>
+    <br>
+    <span style="font-size:12px">top 5 empfehlungen (je max. 3 wörter):</span><br>
+    <div style="margin:4px 0">
+      <input type="text" id="t-tip1" placeholder="1." style="width:98%;margin-bottom:3px">
+      <input type="text" id="t-tip2" placeholder="2." style="width:98%;margin-bottom:3px">
+      <input type="text" id="t-tip3" placeholder="3." style="width:98%;margin-bottom:3px">
+      <input type="text" id="t-tip4" placeholder="4." style="width:98%;margin-bottom:3px">
+      <input type="text" id="t-tip5" placeholder="5." style="width:98%">
+    </div>
+    <br>
+    <span style="font-size:12px">reisebericht:</span><br>
+    <textarea id="t-review" rows="4"></textarea>
     <br><br>
-    <button id="btn-push">speichern + push zu github</button>
-    <div id="push-status"></div>
+    <button id="btn-push-travel">speichern + push zu github</button>
+    <div id="push-status-travel"></div>
   </div>
 </div>
 
 <script>
+// ── MODE ─────────────────────────────────────────────
+let mode = localStorage.getItem("regal_mode") || "music"; // "music" | "travel"
+let albums = [], travels = [], selectedSongs = [], sortKey = "primary", sortDir = 1;
+
 const PW_HASH = "ebc5fcca14a0cd1e62e741d1a413a2e9eb97f0322a09c2d8eb2b73768006d8bd";
 let unlocked = sessionStorage.getItem("pr_ok") === "1";
-let albums = [], selectedSongs = [], sortKey = "artist", sortDir = 1;
 
-function entryHTML(a) {
+function applyMode() {
+  const isTravel = mode === "travel";
+  document.getElementById("mode-cb").checked = isTravel;
+  document.getElementById("lbl-music").className = isTravel ? "" : "active";
+  document.getElementById("lbl-travel").className = isTravel ? "active" : "";
+
+  // header
+  document.getElementById("site-h1").innerHTML = isTravel
+    ? `<span>reise</span>regal`
+    : `<span>platten</span>regal`;
+  document.getElementById("site-sub").textContent = isTravel
+    ? "reiseberichte — subjektiv — endgueltig"
+    : "albenbewertungen — subjektiv — endgueltig — ★ = lieblingssong";
+  document.title = isTravel ? "reiseregal" : "plattenregal";
+
+  // sort options
+  const sk = document.getElementById("sort-key");
+  sk.options[0].text = isTravel ? "stadt" : "artist";
+  sk.options[1].text = isTravel ? "land" : "album";
+  sk.options[3].text = isTravel ? "land" : "genre";
+
+  // footer
+  document.getElementById("footer-json").textContent = isTravel ? "travels.json" : "albums.json";
+  document.getElementById("footer-hint").textContent = isTravel ? "" : "★ = lieblingssong";
+
+  // add forms
+  document.getElementById("music-form").style.display  = isTravel ? "none" : "block";
+  document.getElementById("travel-form").style.display = isTravel ? "block" : "none";
+
+  // gh-path default
+  if (!localStorage.getItem("gh_path") || localStorage.getItem("gh_path") === "albums.json" || localStorage.getItem("gh_path") === "travels.json") {
+    document.getElementById("gh-path").value = isTravel ? "travels.json" : "albums.json";
+  }
+
+  render();
+}
+
+document.getElementById("mode-cb").addEventListener("change", () => {
+  mode = document.getElementById("mode-cb").checked ? "travel" : "music";
+  localStorage.setItem("regal_mode", mode);
+  applyMode();
+});
+document.getElementById("lbl-music").addEventListener("click", () => {
+  if (mode !== "music") { mode="music"; localStorage.setItem("regal_mode","music"); applyMode(); }
+});
+document.getElementById("lbl-travel").addEventListener("click", () => {
+  if (mode !== "travel") { mode="travel"; localStorage.setItem("regal_mode","travel"); applyMode(); }
+});
+
+// ── RENDER MUSIC ─────────────────────────────────────
+function entryMusicHTML(a) {
   const songs = a.songs.map(s =>
     s === a.favorite_song ? `<span class="fav">${s}</span>` : s
   ).join(", ");
   const cid = "cv-" + (a.artist+a.album).replace(/[^a-zA-Z0-9]/g,"");
-  // genre: kommagetrennte tags
-  const genres = a.genre ? a.genre.split(",").map(g=>g.trim()).filter(Boolean).join(" &middot; ") : "";
+  const genres = a.genre ? a.genre.split(",").map(g=>g.trim()).filter(Boolean).join(" · ") : "";
   return `<div class="entry">`
     + `<canvas class="entry-cover" id="${cid}" width="4" height="4"></canvas>`
-    + `<div class="entry-head">${a.album}`
-    + `<span class="entry-rating">${Number(a.rating)}/10</span></div>`
-    + `<div class="entry-meta">${a.year}${genres ? " &nbsp;&middot;&nbsp; "+genres : ""}</div>`
+    + `<div class="entry-head">${a.album}<span class="entry-rating">${Number(a.rating)}/10</span></div>`
+    + `<div class="entry-meta">${a.year}${genres ? " · "+genres : ""}</div>`
     + `<div class="entry-review">${a.review.replace(/\n/g,"<br>")}</div>`
     + `<div class="entry-songs">${songs}</div>`
     + `<div style="clear:both"></div>`
     + `</div>`;
 }
 
+// ── RENDER TRAVEL ─────────────────────────────────────
+function entryTravelHTML(t) {
+  const cid = "cv-" + (t.city+t.country).replace(/[^a-zA-Z0-9]/g,"");
+  const tips = (t.tips||[]).filter(Boolean);
+  return `<div class="entry">`
+    + `<canvas class="entry-cover" id="${cid}" width="4" height="4"></canvas>`
+    + `<div class="entry-head">${t.city} <span style="font-weight:normal;font-size:12px;font-family:'Courier New',monospace">${t.tagline||""}</span><span class="entry-rating">${Number(t.rating)}/10</span></div>`
+    + `<div class="entry-meta">${t.time||""} · ${t.country||""}${t.population ? " · "+t.population+" Einw." : ""}</div>`
+    + `<div class="entry-review">${(t.review||"").replace(/\n/g,"<br>")}</div>`
+    + (tips.length ? `<div class="entry-tips">${tips.map(tip=>`<span>${tip}</span>`).join("")}</div>` : "")
+    + `<div style="clear:both"></div>`
+    + `</div>`;
+}
+
+// ── RENDER (gemeinsam) ────────────────────────────────
 function render() {
   const q    = document.getElementById("search").value.toLowerCase();
   const minR = parseInt(document.getElementById("min-rating").value);
+  const isTravel = mode === "travel";
+  const data = isTravel ? travels : albums;
 
-  let list = albums
-    .map((a, i) => ({...a, index: i}))
-    .filter(a =>
-      a.rating >= minR &&
-      (!q || (a.artist+a.album+a.genre+a.year).toLowerCase().includes(q))
-    );
+  // Felder je nach Modus
+  const getPrimary   = x => isTravel ? x.city   : x.artist;
+  const getSecondary = x => isTravel ? x.country : x.album;
+  const getSearchStr = x => isTravel
+    ? (x.city+x.country+x.time+x.tagline).toLowerCase()
+    : (x.artist+x.album+x.genre+x.year).toLowerCase();
 
-  if (sortKey === "index") {
+  let list = data
+    .map((x,i) => ({...x, index: i}))
+    .filter(x => x.rating >= minR && (!q || getSearchStr(x).includes(q)));
+
+  const sk = sortKey;
+  if (sk === "index") {
     list.sort((a,b) => (a.index - b.index) * sortDir);
   } else {
     list.sort((a,b) => {
-      let va = a[sortKey], vb = b[sortKey];
-      if (typeof va==="string") { va=va.toLowerCase(); vb=vb.toLowerCase(); }
+      let va, vb;
+      if (sk === "primary")   { va = getPrimary(a);   vb = getPrimary(b); }
+      else if (sk === "secondary") { va = getSecondary(a); vb = getSecondary(b); }
+      else { va = a[sk]; vb = b[sk]; }
+      if (typeof va === "string") { va=va.toLowerCase(); vb=vb.toLowerCase(); }
       return va<vb ? -sortDir : va>vb ? sortDir : 0;
     });
   }
@@ -463,47 +601,52 @@ function render() {
     return;
   }
 
-  // nach artist gruppieren (Reihenfolge der Gruppen = erster Treffer im sortierten Array)
-  const groups = [];
-  const groupMap = {};
-  for (const a of list) {
-    const key = a.artist.toLowerCase();
+  // Gruppierung nach primary key (artist / city)
+  const groups = [], groupMap = {};
+  for (const x of list) {
+    const key = getPrimary(x).toLowerCase();
     if (!groupMap[key]) {
-      groupMap[key] = { artist: a.artist, albums: [] };
+      groupMap[key] = { label: getPrimary(x), items: [] };
       groups.push(groupMap[key]);
     }
-    groupMap[key].albums.push(a);
+    groupMap[key].items.push(x);
   }
 
-  document.getElementById("list").innerHTML = groups.map(g => {
-    const multi = g.albums.length > 1;
-    const stackId = "grp-" + g.artist.replace(/[^a-zA-Z0-9]/g,"");
-    const headerClass = "group-header" + (multi ? " collapsible" : "");
-    const onClick = multi ? `onclick="toggleGroup('${stackId}')"` : "";
-    const toggle = multi ? `<span class="group-toggle" id="${stackId}-toggle">[+ ${g.albums.length} alben]</span>` : "";
+  const toggleLabel = isTravel ? "reisen" : "alben";
 
+  document.getElementById("list").innerHTML = groups.map(g => {
+    const multi = g.items.length > 1;
+    const stackId = "grp-" + g.label.replace(/[^a-zA-Z0-9]/g,"");
+    const headerClass = "group-header" + (multi ? " collapsible" : "");
+    const onClick = multi ? `onclick="toggleGroup('${stackId}','${toggleLabel}')"` : "";
+    const toggle = multi ? `<span class="group-toggle" id="${stackId}-toggle">[+ ${g.items.length} ${toggleLabel}]</span>` : "";
+    const htmlFn = isTravel ? entryTravelHTML : entryMusicHTML;
     return `<div class="artist-group">`
-      + `<div class="${headerClass}" ${onClick}>`
-      + `<span class="group-artist">${g.artist}</span>${toggle}`
-      + `</div>`
+      + `<div class="${headerClass}" ${onClick}><span class="group-artist">${g.label}</span>${toggle}</div>`
       + `<div class="stack-peek${multi ? "" : " stack-single"}" id="${stackId}">`
-      + g.albums.map(a => entryHTML(a)).join("")
-      + `</div>`
-      + `</div>`;
+      + g.items.map(x => htmlFn(x)).join("")
+      + `</div></div>`;
   }).join("");
 
-  loadCovers(list);
+  // cover laden
+  const coverList = list.map(x => ({
+    _cacheKey: isTravel ? x.city+"|"+x.country : x.artist+"|"+x.album,
+    _canvasId: "cv-" + (isTravel ? x.city+x.country : x.artist+x.album).replace(/[^a-zA-Z0-9]/g,""),
+    cover_url: x.cover_url
+  }));
+  loadCovers(coverList);
 }
 
-function toggleGroup(id) {
+function toggleGroup(id, label) {
   const el = document.getElementById(id);
   const toggle = document.getElementById(id+"-toggle");
   const isOpen = el.classList.contains("open");
   el.classList.toggle("open");
   const count = el.querySelectorAll(".entry").length;
-  toggle.textContent = isOpen ? `[+ ${count} alben]` : `[– ${count} alben]`;
+  toggle.textContent = isOpen ? `[+ ${count} ${label}]` : `[– ${count} ${label}]`;
 }
 
+// ── CONTROLS ─────────────────────────────────────────
 ["sort-key","sort-dir","min-rating"].forEach(id =>
   document.getElementById(id).addEventListener("change", e => {
     if (id==="sort-key") sortKey=e.target.value;
@@ -513,9 +656,11 @@ function toggleGroup(id) {
 );
 document.getElementById("search").addEventListener("input", render);
 
+// ── DATEN LADEN ──────────────────────────────────────
 (async () => {
-  try { albums = await (await fetch("albums.json?_="+Date.now())).json(); } catch(e) { albums=[]; }
-  render();
+  try { albums  = await (await fetch("albums.json?_="+Date.now())).json();  } catch(e) { albums=[]; }
+  try { travels = await (await fetch("travels.json?_="+Date.now())).json(); } catch(e) { travels=[]; }
+  applyMode();
   updateGenreList();
 })();
 
@@ -524,23 +669,19 @@ function updateGenreList() {
   document.getElementById("genre-list").innerHTML = genres.map(g => `<option value="${g}">`).join("");
 }
 
-// ── COVER ART (verpixelt) ──────────────
+// ── COVER PIXEL CACHE ────────────────────────────────
 const CACHE_VERSION = "v1";
 const CACHE_PREFIX = "pr_cover_" + CACHE_VERSION + "_";
 if (localStorage.getItem("pr_cache_version") !== CACHE_VERSION) {
-  Object.keys(localStorage).filter(k => k.startsWith("pr_cover_")).forEach(k => localStorage.removeItem(k));
+  Object.keys(localStorage).filter(k=>k.startsWith("pr_cover_")).forEach(k=>localStorage.removeItem(k));
   localStorage.setItem("pr_cache_version", CACHE_VERSION);
 }
 
-function canvasId(a) {
-  return "cv-" + (a.artist+a.album).replace(/[^a-zA-Z0-9]/g,"");
+function cacheKey(item) {
+  return CACHE_PREFIX + item._cacheKey.replace(/[^a-zA-Z0-9|]/g,"").slice(0,60);
 }
 
-function cacheKey(a) {
-  return CACHE_PREFIX + (a.artist+"|"+a.album).replace(/[^a-zA-Z0-9|]/g,"").slice(0,60);
-}
-
-async function drawCover(canvas, url) {
+async function drawCover(canvas, url, ck) {
   return new Promise(resolve => {
     const img = new Image();
     img.crossOrigin = "anonymous";
@@ -552,7 +693,7 @@ async function drawCover(canvas, url) {
         const full = document.createElement("canvas");
         full.width = full.height = 4;
         full.getContext("2d").drawImage(img, 0, 0, 4, 4);
-        localStorage.setItem(cacheKey(canvas._album), full.toDataURL());
+        localStorage.setItem(ck, full.toDataURL());
       } catch(e) {}
       resolve();
     };
@@ -562,31 +703,24 @@ async function drawCover(canvas, url) {
 }
 
 async function loadCovers(list) {
-  for (const a of list) {
-    const canvas = document.getElementById(canvasId(a));
-    if (!canvas || canvas.dataset.loaded) continue;
-    if (!a.cover_url) continue;
-    canvas._album = a;
-
-    const cached = localStorage.getItem(cacheKey(a));
+  for (const item of list) {
+    const canvas = document.getElementById(item._canvasId);
+    if (!canvas || canvas.dataset.loaded || !item.cover_url) continue;
+    const ck = cacheKey(item);
+    const cached = localStorage.getItem(ck);
     if (cached) {
       const img = new Image();
-      img.onload = () => {
-        const ctx = canvas.getContext("2d");
-        ctx.imageSmoothingEnabled = false;
-        ctx.drawImage(img, 0, 0, 4, 4);
-      };
+      img.onload = () => { const ctx=canvas.getContext("2d"); ctx.imageSmoothingEnabled=false; ctx.drawImage(img,0,0,4,4); };
       img.src = cached;
       canvas.dataset.loaded = "1";
       continue;
     }
-
-    await drawCover(canvas, a.cover_url);
+    await drawCover(canvas, item.cover_url, ck);
     canvas.dataset.loaded = "1";
   }
 }
 
-// password
+// ── PASSWORD ─────────────────────────────────────────
 document.getElementById("toggle-add").addEventListener("click", e => {
   e.preventDefault();
   if (unlocked) toggleAdd();
@@ -614,13 +748,20 @@ document.getElementById("pw-cancel").addEventListener("click", () => {
   document.getElementById("pw-error").style.display="none";
 });
 document.getElementById("pw-input").addEventListener("keydown", e => { if(e.key==="Enter") checkPw(); });
+
 function toggleAdd() {
-  const s=document.getElementById("add-section");
-  s.style.display=s.style.display==="none"?"block":"none";
-  if (s.style.display==="block") loadGh();
+  const s = document.getElementById("add-section");
+  s.style.display = s.style.display==="none" ? "block" : "none";
+  if (s.style.display==="block") {
+    loadGh();
+    // gh-path je nach modus vorbelegen
+    if (!localStorage.getItem("gh_path")) {
+      document.getElementById("gh-path").value = mode==="travel" ? "travels.json" : "albums.json";
+    }
+  }
 }
 
-// github
+// ── GITHUB ───────────────────────────────────────────
 function saveGh() {
   localStorage.setItem("gh_token",  document.getElementById("gh-token").value.trim());
   localStorage.setItem("gh_repo",   document.getElementById("gh-repo").value.trim());
@@ -633,11 +774,36 @@ function loadGh() {
   document.getElementById("gh-token").value  = localStorage.getItem("gh_token")||"";
   document.getElementById("gh-repo").value   = localStorage.getItem("gh_repo")||"";
   document.getElementById("gh-branch").value = localStorage.getItem("gh_branch")||"main";
-  document.getElementById("gh-path").value   = localStorage.getItem("gh_path")||"albums.json";
+  document.getElementById("gh-path").value   = localStorage.getItem("gh_path")||(mode==="travel"?"travels.json":"albums.json");
 }
 document.getElementById("btn-save-gh").addEventListener("click", saveGh);
 
-// musicbrainz
+async function pushToGithub(newEntry, currentData, ps) {
+  const token  = localStorage.getItem("gh_token");
+  const repo   = localStorage.getItem("gh_repo");
+  const branch = localStorage.getItem("gh_branch")||"main";
+  const path   = localStorage.getItem("gh_path")||(mode==="travel"?"travels.json":"albums.json");
+  if (!token||!repo) { ps.textContent="fehler: github einstellungen fehlen."; return false; }
+  ps.textContent="verbinde...";
+  try {
+    const shaRes = await fetch(`https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`,
+      {headers:{Authorization:`token ${token}`,Accept:"application/vnd.github+json"}});
+    if (!shaRes.ok) throw new Error(`${shaRes.status} - token/repo falsch?`);
+    const {sha} = await shaRes.json();
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify([...currentData,newEntry],null,2))));
+    ps.textContent="schreibe...";
+    const putRes = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`,{
+      method:"PUT",
+      headers:{Authorization:`token ${token}`,Accept:"application/vnd.github+json","Content-Type":"application/json"},
+      body:JSON.stringify({message:`add: ${Object.values(newEntry).slice(0,2).join(" - ")}`,content,sha,branch})
+    });
+    if (!putRes.ok) { const err=await putRes.json(); throw new Error(err.message||putRes.status); }
+    ps.textContent="fertig. ~30 sek bis live.";
+    return true;
+  } catch(e) { ps.textContent="fehler: "+e.message; return false; }
+}
+
+// ── MUSIK FORM ───────────────────────────────────────
 async function mbSearch() {
   const artist=document.getElementById("q-artist").value.trim();
   const album=document.getElementById("q-album").value.trim();
@@ -656,7 +822,7 @@ async function mbSearch() {
       const a=(r["artist-credit"]?.[0]?.name||"?").replace(/"/g,"&quot;");
       const t=r.title.replace(/"/g,"&quot;");
       const y=(r.date||"").slice(0,4)||"?";
-      return `<a data-id="${r.id}" data-artist="${a}" data-album="${t}" data-year="${y}">${a} &ndash; ${r.title} (${y})</a>`;
+      return `<a data-id="${r.id}" data-artist="${a}" data-album="${t}" data-year="${y}">${a} – ${r.title} (${y})</a>`;
     }).join("");
     document.getElementById("mb-results").querySelectorAll("a").forEach(el=>el.addEventListener("click",()=>mbSelect(el)));
   } catch(e) { st.textContent="fehler: "+e.message; }
@@ -706,8 +872,7 @@ document.getElementById("btn-manual").addEventListener("click", () => {
   document.getElementById(id).addEventListener("keydown",e=>{if(e.key==="Enter")mbSearch();})
 );
 
-// push
-document.getElementById("btn-push").addEventListener("click", async () => {
+document.getElementById("btn-push-music").addEventListener("click", async () => {
   const isManual = document.getElementById("form-section").dataset.mode === "manual";
   const fav = isManual
     ? document.getElementById("f-fav-manual").value.trim()
@@ -715,44 +880,27 @@ document.getElementById("btn-push").addEventListener("click", async () => {
   const songs = isManual
     ? document.getElementById("f-songs-manual").value.split(",").map(s=>s.trim()).filter(Boolean)
     : selectedSongs;
+  const rating = parseFloat(document.getElementById("f-rating").value);
+  const ps = document.getElementById("push-status-music");
+  if (!fav)                                                              { ps.textContent="fehler: kein lieblingssong."; return; }
+  if (isManual && !songs.length)                                         { ps.textContent="fehler: keine songs."; return; }
+  if (isNaN(rating)||rating<1||rating>10||rating*2!==Math.round(rating*2)) { ps.textContent="fehler: wertung 1-10, nur .5."; return; }
+  const coverUrl = document.getElementById("f-cover").value.trim();
+  if (!coverUrl)                                                         { ps.textContent="fehler: cover url fehlt."; return; }
 
-  const rating=parseFloat(document.getElementById("f-rating").value);
-  const ps=document.getElementById("push-status");
-  if (!fav)                                           {ps.textContent="fehler: kein lieblingssong.";return;}
-  if (isManual && !songs.length)                      {ps.textContent="fehler: keine songs eingegeben.";return;}
-  if (!isManual && !document.querySelector('input[name="fav"]:checked')) {ps.textContent="fehler: kein lieblingssong.";return;}
-  if (isNaN(rating)||rating<1||rating>10||rating*2!==Math.round(rating*2)) {ps.textContent="fehler: wertung 1-10, nur .5 erlaubt.";return;}
-  const coverUrl=document.getElementById("f-cover").value.trim();
-  if (!coverUrl) {ps.textContent="fehler: cover url fehlt.";return;}
-  const token=localStorage.getItem("gh_token");
-  const repo=localStorage.getItem("gh_repo");
-  const branch=localStorage.getItem("gh_branch")||"main";
-  const path=localStorage.getItem("gh_path")||"albums.json";
-  if (!token||!repo) {ps.textContent="fehler: github einstellungen fehlen.";return;}
-  const entry={
-    artist:document.getElementById("f-artist").value,
-    album:document.getElementById("f-album").value,
-    year:parseInt(document.getElementById("f-year").value)||document.getElementById("f-year").value,
-    genre:document.getElementById("f-genre").value,
-    rating,favorite_song:fav,songs:songs,
-    review:document.getElementById("f-review").value,
-    cover_url:coverUrl
+  const entry = {
+    artist:        document.getElementById("f-artist").value,
+    album:         document.getElementById("f-album").value,
+    year:          parseInt(document.getElementById("f-year").value)||document.getElementById("f-year").value,
+    genre:         document.getElementById("f-genre").value,
+    rating, favorite_song: fav, songs,
+    review:        document.getElementById("f-review").value,
+    cover_url:     coverUrl
   };
-  ps.textContent="verbinde...";
-  try {
-    const shaRes=await fetch(`https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`,
-      {headers:{Authorization:`token ${token}`,Accept:"application/vnd.github+json"}});
-    if (!shaRes.ok) throw new Error(`${shaRes.status} - token/repo falsch?`);
-    const {sha}=await shaRes.json();
-    const content=btoa(unescape(encodeURIComponent(JSON.stringify([...albums,entry],null,2))));
-    const putRes=await fetch(`https://api.github.com/repos/${repo}/contents/${path}`,{
-      method:"PUT",
-      headers:{Authorization:`token ${token}`,Accept:"application/vnd.github+json","Content-Type":"application/json"},
-      body:JSON.stringify({message:`add: ${entry.artist} - ${entry.album}`,content,sha,branch})
-    });
-    if (!putRes.ok) {const err=await putRes.json();throw new Error(err.message||putRes.status);}
+
+  const ok = await pushToGithub(entry, albums, ps);
+  if (ok) {
     albums.push(entry); render(); updateGenreList();
-    ps.textContent="fertig. ~30 sek bis live.";
     ["f-artist","f-album","f-year","f-genre","f-rating","f-review","f-cover"].forEach(id=>document.getElementById(id).value="");
     document.getElementById("f-songs-manual").value="";
     document.getElementById("f-fav-manual").value="";
@@ -763,7 +911,39 @@ document.getElementById("btn-push").addEventListener("click", async () => {
     document.getElementById("form-section").dataset.mode="";
     document.getElementById("q-artist").value=document.getElementById("q-album").value="";
     selectedSongs=[];
-  } catch(e) {ps.textContent="fehler: "+e.message;}
+  }
+});
+
+// ── REISE FORM ───────────────────────────────────────
+document.getElementById("btn-push-travel").addEventListener("click", async () => {
+  const ps = document.getElementById("push-status-travel");
+  const city    = document.getElementById("t-city").value.trim();
+  const country = document.getElementById("t-country").value.trim();
+  const rating  = parseFloat(document.getElementById("t-rating").value);
+  if (!city)                                                               { ps.textContent="fehler: stadt fehlt."; return; }
+  if (!country)                                                            { ps.textContent="fehler: land fehlt."; return; }
+  if (isNaN(rating)||rating<1||rating>10||rating*2!==Math.round(rating*2)){ ps.textContent="fehler: wertung 1-10, nur .5."; return; }
+
+  const tips = [1,2,3,4,5]
+    .map(i => document.getElementById(`t-tip${i}`).value.trim())
+    .filter(Boolean);
+
+  const entry = {
+    city, country,
+    time:       document.getElementById("t-time").value.trim(),
+    population: document.getElementById("t-pop").value.trim(),
+    tagline:    document.getElementById("t-tagline").value.trim(),
+    rating, tips,
+    review:     document.getElementById("t-review").value,
+    cover_url:  document.getElementById("t-cover").value.trim()
+  };
+
+  const ok = await pushToGithub(entry, travels, ps);
+  if (ok) {
+    travels.push(entry); render();
+    ["t-city","t-country","t-time","t-pop","t-tagline","t-rating","t-cover","t-review"].forEach(id=>document.getElementById(id).value="");
+    [1,2,3,4,5].forEach(i=>document.getElementById(`t-tip${i}`).value="");
+  }
 });
 </script>
 </body>
