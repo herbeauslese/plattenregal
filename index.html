@@ -752,13 +752,7 @@ document.getElementById("pw-input").addEventListener("keydown", e => { if(e.key=
 function toggleAdd() {
   const s = document.getElementById("add-section");
   s.style.display = s.style.display==="none" ? "block" : "none";
-  if (s.style.display==="block") {
-    loadGh();
-    // gh-path je nach modus vorbelegen
-    if (!localStorage.getItem("gh_path")) {
-      document.getElementById("gh-path").value = mode==="travel" ? "travels.json" : "albums.json";
-    }
-  }
+  if (s.style.display==="block") loadGh();
 }
 
 // ── GITHUB ───────────────────────────────────────────
@@ -766,7 +760,12 @@ function saveGh() {
   localStorage.setItem("gh_token",  document.getElementById("gh-token").value.trim());
   localStorage.setItem("gh_repo",   document.getElementById("gh-repo").value.trim());
   localStorage.setItem("gh_branch", document.getElementById("gh-branch").value.trim()||"main");
-  localStorage.setItem("gh_path",   document.getElementById("gh-path").value.trim()||"albums.json");
+  const path = document.getElementById("gh-path").value.trim();
+  if (mode === "travel") {
+    localStorage.setItem("gh_path_travel", path || "travels.json");
+  } else {
+    localStorage.setItem("gh_path_music", path || "albums.json");
+  }
   const s=document.getElementById("gh-saved"); s.style.display="inline";
   setTimeout(()=>s.style.display="none",2000);
 }
@@ -774,7 +773,10 @@ function loadGh() {
   document.getElementById("gh-token").value  = localStorage.getItem("gh_token")||"";
   document.getElementById("gh-repo").value   = localStorage.getItem("gh_repo")||"";
   document.getElementById("gh-branch").value = localStorage.getItem("gh_branch")||"main";
-  document.getElementById("gh-path").value   = localStorage.getItem("gh_path")||(mode==="travel"?"travels.json":"albums.json");
+  const path = mode === "travel"
+    ? (localStorage.getItem("gh_path_travel") || "travels.json")
+    : (localStorage.getItem("gh_path_music")  || "albums.json");
+  document.getElementById("gh-path").value = path;
 }
 document.getElementById("btn-save-gh").addEventListener("click", saveGh);
 
@@ -782,7 +784,10 @@ async function pushToGithub(newEntry, currentData, ps) {
   const token  = localStorage.getItem("gh_token");
   const repo   = localStorage.getItem("gh_repo");
   const branch = localStorage.getItem("gh_branch")||"main";
-  const path   = localStorage.getItem("gh_path")||(mode==="travel"?"travels.json":"albums.json");
+  // immer den richtigen pfad je nach aktuellem modus nehmen
+  const path   = mode === "travel"
+    ? (localStorage.getItem("gh_path_travel") || "travels.json")
+    : (localStorage.getItem("gh_path_music")  || "albums.json");
   if (!token||!repo) { ps.textContent="fehler: github einstellungen fehlen."; return false; }
   ps.textContent="verbinde...";
   try {
