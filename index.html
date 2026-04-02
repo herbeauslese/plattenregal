@@ -670,7 +670,7 @@ function updateGenreList() {
 }
 
 // ── COVER PIXEL CACHE ────────────────────────────────
-const CACHE_VERSION = "v1";
+const CACHE_VERSION = "v2";
 const CACHE_PREFIX = "pr_cover_" + CACHE_VERSION + "_";
 if (localStorage.getItem("pr_cache_version") !== CACHE_VERSION) {
   Object.keys(localStorage).filter(k=>k.startsWith("pr_cover_")).forEach(k=>localStorage.removeItem(k));
@@ -681,10 +681,10 @@ function cacheKey(item) {
   return CACHE_PREFIX + item._cacheKey.replace(/[^a-zA-Z0-9|]/g,"").slice(0,60);
 }
 
-async function drawCover(canvas, url, ck) {
+async function drawCover(canvas, url, ck, sameOrigin=false) {
   return new Promise(resolve => {
     const img = new Image();
-    img.crossOrigin = "anonymous";
+    if (!sameOrigin) img.crossOrigin = "anonymous";
     img.onload = () => {
       const ctx = canvas.getContext("2d");
       ctx.imageSmoothingEnabled = true;
@@ -693,7 +693,8 @@ async function drawCover(canvas, url, ck) {
         const full = document.createElement("canvas");
         full.width = full.height = 4;
         full.getContext("2d").drawImage(img, 0, 0, 4, 4);
-        localStorage.setItem(ck, full.toDataURL());
+        const data = full.toDataURL();
+        if (data && data !== "data:,") localStorage.setItem(ck, data);
       } catch(e) {}
       resolve();
     };
@@ -708,14 +709,15 @@ async function loadCovers(list) {
     if (!canvas || canvas.dataset.loaded || !item.cover_url) continue;
     const ck = cacheKey(item);
     const cached = localStorage.getItem(ck);
-    if (cached) {
+    if (cached && cached !== "data:,") {
       const img = new Image();
       img.onload = () => { const ctx=canvas.getContext("2d"); ctx.imageSmoothingEnabled=false; ctx.drawImage(img,0,0,4,4); };
       img.src = cached;
       canvas.dataset.loaded = "1";
       continue;
     }
-    await drawCover(canvas, item.cover_url, ck);
+    // relativer pfad: kein crossOrigin setzen (same-origin)
+    await drawCover(canvas, item.cover_url, ck, !item.cover_url.startsWith("http"));
     canvas.dataset.loaded = "1";
   }
 }
