@@ -133,7 +133,11 @@
     border-bottom: 1px solid #000;
     padding: 8px 0 6px 0;
     cursor: default;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
   }
+  .group-header-left { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
   .group-header.collapsible { cursor: pointer; }
   .group-header.collapsible:hover .group-artist { text-decoration: underline; }
   .group-artist {
@@ -143,9 +147,45 @@
   .group-toggle {
     font-size: 11px;
     color: #888;
-    margin-left: 8px;
     font-family: "Courier New", monospace;
   }
+
+  /* collapse indicator arrow */
+  .collapse-indicator {
+    font-size: 11px;
+    color: #aaa;
+    font-family: "Courier New", monospace;
+    flex-shrink: 0;
+    transition: transform 0.15s;
+  }
+  .stack-peek.open ~ .group-header .collapse-indicator { transform: rotate(180deg); }
+
+  /* edit pencil on album title hover */
+  .entry-head { position: relative; }
+  .edit-btn {
+    display: none;
+    font-size: 11px;
+    color: #aaa;
+    cursor: pointer;
+    margin-left: 6px;
+    font-family: "Courier New", monospace;
+    vertical-align: middle;
+  }
+  .entry-head:hover .edit-btn { display: inline; }
+  .edit-btn:hover { color: #000; }
+
+  /* inline edit form */
+  .edit-form {
+    margin-top: 8px;
+    padding: 8px;
+    border: 1px dashed #ccc;
+    font-size: 12px;
+    background: #fafafa;
+  }
+  .edit-form label { display: inline-block; width: 80px; color: #666; font-size: 11px; }
+  .edit-form input[type=number] { width: 55px; }
+  .edit-form textarea { font-size: 12px; }
+  .edit-form-btns { margin-top: 6px; display: flex; gap: 6px; }
 
   /* ── ENTRIES ── */
   .entry {
@@ -360,9 +400,10 @@
 </div>
 
 <!-- HEADER -->
-<div id="site-header">
+<div id="site-header" style="position:relative">
   <h1 id="site-h1"><span>platten</span>regal</h1>
   <p class="sub" id="site-sub">albenbewertungen &mdash; subjektiv, objektiv</p>
+  <span id="artist-count" style="position:absolute;top:10px;right:12px;font-size:10px;color:#aaa;font-family:'Courier New',monospace"></span>
 </div>
 
 <!-- CONTROLS -->
@@ -559,12 +600,17 @@ function entryMusicHTML(a) {
   ).join(", ");
   const cid = "cv-" + (a.artist+a.album).replace(/[^a-zA-Z0-9]/g,"");
   const genres = a.genre ? a.genre.split(",").map(g=>g.trim()).filter(Boolean).join(" · ") : "";
+  const eid = "edit-" + (a.artist+a.album).replace(/[^a-zA-Z0-9]/g,"");
+  const editBtn = unlocked
+    ? `<span class="edit-btn" onclick="toggleEdit('${eid}',event)">✎</span>`
+    : "";
   return `<div class="entry">`
     + `<canvas class="entry-cover" id="${cid}" width="4" height="4"></canvas>`
-    + `<div class="entry-head">${a.album}<span class="entry-rating">${Number(a.rating)}/10</span></div>`
+    + `<div class="entry-head">${a.album}<span class="entry-rating">${Number(a.rating)}/10</span>${editBtn}</div>`
     + `<div class="entry-meta">${a.year}${genres ? " · "+genres : ""}</div>`
-    + `<div class="entry-review">${a.review.replace(/\n/g,"<br>")}</div>`
+    + `<div class="entry-review" id="rev-${eid}">${a.review.replace(/\n/g,"<br>")}</div>`
     + `<div class="entry-songs">${songs}</div>`
+    + `<div id="${eid}" style="display:none"></div>`
     + `<div style="clear:both"></div>`
     + `</div>`;
 }
@@ -652,12 +698,16 @@ function render() {
     const headerClass = "group-header" + (multi ? " collapsible" : "");
     const onClick = multi ? `onclick="toggleGroup('${stackId}','${toggleLabel}')"` : "";
     const avgBadge = multi && !isTravel
-      ? `<span style="font-size:11px;font-family:'Courier New',monospace;margin-left:8px;color:#555">&empty; ${g.avgRating}</span>`
+      ? `<span style="font-size:11px;font-family:'Courier New',monospace;color:#555">&empty; ${g.avgRating}</span>`
       : "";
     const toggle = multi ? `<span class="group-toggle" id="${stackId}-toggle">[+ ${g.items.length} ${toggleLabel}]</span>` : "";
+    const arrow = multi ? `<span class="collapse-indicator" id="${stackId}-arrow">&#9660;</span>` : "";
     const htmlFn = isTravel ? entryTravelHTML : entryMusicHTML;
     return `<div class="artist-group">`
-      + `<div class="${headerClass}" ${onClick}><span class="group-artist">${g.label}</span>${avgBadge}${toggle}</div>`
+      + `<div class="${headerClass}" ${onClick}>`
+      + `<div class="group-header-left"><span class="group-artist">${g.label}</span>${avgBadge}${toggle}</div>`
+      + arrow
+      + `</div>`
       + `<div class="stack-peek${multi ? "" : " stack-single"}" id="${stackId}">`
       + g.items.map(x => htmlFn(x)).join("")
       + `</div></div>`;
@@ -672,15 +722,79 @@ function render() {
     }));
     loadCovers(coverList);
   }
+  updateArtistCount();
 }
 
 function toggleGroup(id, label) {
   const el = document.getElementById(id);
   const toggle = document.getElementById(id+"-toggle");
+  const arrow = document.getElementById(id+"-arrow");
   const isOpen = el.classList.contains("open");
   el.classList.toggle("open");
   const count = el.querySelectorAll(".entry").length;
-  toggle.textContent = isOpen ? `[+ ${count} ${label}]` : `[– ${count} ${label}]`;
+  if (toggle) toggle.textContent = isOpen ? `[+ ${count} ${label}]` : `[– ${count} ${label}]`;
+  if (arrow) arrow.style.transform = isOpen ? "" : "rotate(180deg)";
+}
+
+function updateArtistCount() {
+  const isTravel = mode === "travel";
+  const data = isTravel ? travels : albums;
+  const label = isTravel ? "reisen" : "alben";
+  document.getElementById("artist-count").textContent = `${data.length} ${label}`;
+}
+
+function toggleEdit(eid, e) {
+  e.stopPropagation();
+  const container = document.getElementById(eid);
+  if (container.style.display !== "none") { container.style.display="none"; return; }
+
+  // Album aus albums-Array finden
+  const idx = albums.findIndex(a => ("edit-"+(a.artist+a.album).replace(/[^a-zA-Z0-9]/g,"")) === eid);
+  if (idx < 0) return;
+  const a = albums[idx];
+
+  container.style.display = "block";
+  container.innerHTML = `<div class="edit-form">
+    <div style="margin-bottom:5px"><label>wertung:</label><input type="number" id="${eid}-rating" min="1" max="10" step="0.5" value="${a.rating}" style="width:55px"></div>
+    <div><label>rezension:</label><textarea id="${eid}-review" rows="4" style="width:98%;margin-top:3px">${a.review}</textarea></div>
+    <div class="edit-form-btns">
+      <button onclick="saveEdit('${eid}',${idx})">speichern</button>
+      <button onclick="document.getElementById('${eid}').style.display='none'" style="color:#888;border-color:#888">abbrechen</button>
+    </div>
+    <div id="${eid}-status" style="font-size:11px;margin-top:4px"></div>
+  </div>`;
+}
+
+async function saveEdit(eid, idx) {
+  const rating = parseFloat(document.getElementById(`${eid}-rating`).value);
+  const review = document.getElementById(`${eid}-review`).value;
+  const st = document.getElementById(`${eid}-status`);
+  if (isNaN(rating)||rating<1||rating>10||rating*2!==Math.round(rating*2)) { st.textContent="fehler: wertung 1-10, nur .5."; return; }
+
+  albums[idx] = {...albums[idx], rating, review};
+
+  const token  = localStorage.getItem("gh_token");
+  const repo   = localStorage.getItem("gh_repo");
+  const branch = localStorage.getItem("gh_branch")||"main";
+  const path   = localStorage.getItem("gh_path_music")||"albums.json";
+  if (!token||!repo) { st.textContent="fehler: github einstellungen fehlen."; return; }
+
+  st.textContent="speichere...";
+  try {
+    const shaRes = await fetch(`https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`,
+      {headers:{Authorization:`token ${token}`,Accept:"application/vnd.github+json"}});
+    if (!shaRes.ok) throw new Error(shaRes.status);
+    const {sha} = await shaRes.json();
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(albums, null, 2))));
+    const putRes = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`,{
+      method:"PUT",
+      headers:{Authorization:`token ${token}`,Accept:"application/vnd.github+json","Content-Type":"application/json"},
+      body:JSON.stringify({message:`edit: ${albums[idx].artist} - ${albums[idx].album}`,content,sha,branch})
+    });
+    if (!putRes.ok) { const err=await putRes.json(); throw new Error(err.message||putRes.status); }
+    st.textContent="✓ gespeichert.";
+    render();
+  } catch(e) { st.textContent="fehler: "+e.message; }
 }
 
 // ── CONTROLS ─────────────────────────────────────────
