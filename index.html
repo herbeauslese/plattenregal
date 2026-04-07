@@ -604,10 +604,13 @@ function entryMusicHTML(a) {
   const editBtn = unlocked
     ? `<span class="edit-btn" onclick="toggleEdit('${eid}',event)">✎</span>`
     : "";
+  const reviewedAt = a.reviewed_at
+    ? `<span style="font-size:10px;color:#aaa;margin-left:6px">${new Date(a.reviewed_at).toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit",year:"numeric"})}</span>`
+    : "";
   return `<div class="entry">`
     + `<canvas class="entry-cover" id="${cid}" width="4" height="4"></canvas>`
     + `<div class="entry-head">${a.album}<span class="entry-rating">${Number(a.rating)}/10</span>${editBtn}</div>`
-    + `<div class="entry-meta">${a.year}${genres ? " · "+genres : ""}</div>`
+    + `<div class="entry-meta">${a.year}${genres ? " · "+genres : ""}${reviewedAt}</div>`
     + `<div class="entry-review" id="rev-${eid}">${a.review.replace(/\n/g,"<br>")}</div>`
     + `<div class="entry-songs">${songs}</div>`
     + `<div id="${eid}" style="display:none"></div>`
@@ -754,8 +757,10 @@ function toggleEdit(eid, e) {
   const a = albums[idx];
 
   container.style.display = "block";
+  const currentDate = a.reviewed_at ? a.reviewed_at.slice(0,10) : "";
   container.innerHTML = `<div class="edit-form">
     <div style="margin-bottom:5px"><label>wertung:</label><input type="number" id="${eid}-rating" min="1" max="10" step="0.5" value="${a.rating}" style="width:55px"></div>
+    <div style="margin-bottom:5px"><label>datum:</label><input type="date" id="${eid}-date" value="${currentDate}" style="width:140px"></div>
     <div><label>rezension:</label><textarea id="${eid}-review" rows="4" style="width:98%;margin-top:3px">${a.review}</textarea></div>
     <div class="edit-form-btns">
       <button onclick="saveEdit('${eid}',${idx})">speichern</button>
@@ -768,10 +773,12 @@ function toggleEdit(eid, e) {
 async function saveEdit(eid, idx) {
   const rating = parseFloat(document.getElementById(`${eid}-rating`).value);
   const review = document.getElementById(`${eid}-review`).value;
+  const dateVal = document.getElementById(`${eid}-date`).value;
+  const reviewed_at = dateVal ? new Date(dateVal).toISOString() : albums[idx].reviewed_at || null;
   const st = document.getElementById(`${eid}-status`);
   if (isNaN(rating)||rating<1||rating>10||rating*2!==Math.round(rating*2)) { st.textContent="fehler: wertung 1-10, nur .5."; return; }
 
-  albums[idx] = {...albums[idx], rating, review};
+  albums[idx] = {...albums[idx], rating, review, reviewed_at};
 
   const token  = localStorage.getItem("gh_token");
   const repo   = localStorage.getItem("gh_repo");
@@ -1053,7 +1060,8 @@ document.getElementById("btn-push-music").addEventListener("click", async () => 
     genre:         document.getElementById("f-genre").value,
     rating, favorite_song: fav, songs,
     review:        document.getElementById("f-review").value,
-    cover_url:     coverUrl
+    cover_url:     coverUrl,
+    reviewed_at:   new Date().toISOString()
   };
 
   const ok = await pushToGithub(entry, albums, ps);
