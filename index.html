@@ -383,8 +383,125 @@
     .entry-head { font-size: 14px; }
     #controls input[type=text] { width: 100px; }
     .row label { width: 80px; font-size: 10px; }
-    #add-section { padding: 10px; }
   }
+
+  /* ── DARK MODE ── */
+  body.dark {
+    background: #111;
+    color: #ddd;
+  }
+  body.dark h1 span { background: #ddd; color: #111; }
+  body.dark #site-header { border-color: #ddd; }
+  body.dark p.sub { color: #777; border-color: #444; }
+  body.dark #controls { border-color: #555; }
+  body.dark #controls::before { color: #555; }
+  body.dark select, body.dark input, body.dark textarea {
+    background: #1a1a1a; color: #ddd; border-color: #555;
+  }
+  body.dark button { background: #1a1a1a; color: #ddd; border-color: #555; }
+  body.dark button:hover { background: #ddd; color: #111; }
+  body.dark .group-header { border-color: #444; }
+  body.dark .artist-group:first-child .group-header { border-color: #ddd; }
+  body.dark .entry { border-color: #333; }
+  body.dark .artist-group:last-child .entry:last-child,
+  body.dark .stack-single .entry { border-color: #ddd; }
+  body.dark .stack-peek:not(.open):not(.stack-single) .entry { border-color: #2a2a2a; }
+  body.dark .entry-rating { background: #ddd; color: #111; }
+  body.dark .entry-meta { color: #888; }
+  body.dark .entry-songs { color: #aaa; border-color: #333; }
+  body.dark .entry-tips { color: #aaa; border-color: #333; }
+  body.dark .entry-cover { border-color: #444; background: #222; }
+  body.dark .entry-cover-photo { border-color: #444; background: #222; }
+  body.dark #footer { border-color: #ddd; color: #666; }
+  body.dark #footer a { color: #ddd; }
+  body.dark .group-toggle { color: #666; }
+  body.dark .collapse-indicator { color: #555; }
+  body.dark #artist-count { color: #555; }
+  body.dark .edit-form { background: #1a1a1a; border-color: #444; }
+  body.dark .edit-form label { color: #888; }
+  body.dark #mode-switch span { color: #555; }
+  body.dark #mode-switch span.active { color: #ddd; }
+  body.dark .pill { border-color: #555; background: #333; }
+  body.dark #mode-toggle input:checked + .pill { background: #ddd; }
+  body.dark #mode-toggle input:checked + .pill::after { background: #111; }
+  body.dark .pill::after { background: #ddd; }
+  body.dark #pw-box { background: #111; border-color: #ddd; }
+  body.dark .fav { color: #ddd; }
+  body.dark #mb-results:not(:empty) { border-color: #444; }
+  body.dark #song-radios { border-color: #444; }
+  body.dark details summary { color: #666; }
+
+  /* ── ADMIN TOOLBAR ── */
+  #admin-bar {
+    position: absolute;
+    top: 10px; right: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: "Courier New", monospace;
+    font-size: 13px;
+  }
+  #admin-bar button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    padding: 0;
+    color: #aaa;
+    line-height: 1;
+  }
+  body.dark #admin-bar button { color: #555; }
+  #admin-bar button:hover { background: none; color: #000; }
+  body.dark #admin-bar button:hover { color: #ddd; }
+  #admin-bar button.active { color: #000; }
+  body.dark #admin-bar button.active { color: #ddd; }
+
+  /* ── POPUP OVERLAY ── */
+  #popup-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 200;
+    overflow-y: auto;
+  }
+  body.dark #popup-overlay { background: rgba(0,0,0,0.75); }
+  #popup-box {
+    background: #fff;
+    border: 2px solid #000;
+    border-bottom: 4px solid #000;
+    margin: 40px auto;
+    max-width: 600px;
+    padding: 16px;
+    font-size: 13px;
+    position: relative;
+  }
+  body.dark #popup-box { background: #111; border-color: #ddd; color: #ddd; }
+  #popup-close {
+    position: absolute;
+    top: 10px; right: 12px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #aaa;
+    border: none;
+    background: none;
+    font-family: "Courier New", monospace;
+  }
+  #popup-close:hover { color: #000; background: none; }
+  body.dark #popup-close { color: #666; }
+  body.dark #popup-close:hover { color: #ddd; background: none; }
+  #popup-box b { font-family: "Special Elite","Courier New",monospace; font-size:15px; }
+
+  /* admin settings panel */
+  #admin-panel {
+    display: none;
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px dashed #ccc;
+    font-size: 12px;
+  }
+  body.dark #admin-panel { border-color: #333; }
+  #admin-panel label { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -404,6 +521,10 @@
   <h1 id="site-h1"><span>platten</span>regal</h1>
   <p class="sub" id="site-sub">albenbewertungen &mdash; subjektiv, objektiv</p>
   <span id="artist-count" style="position:absolute;top:10px;right:12px;font-size:10px;color:#aaa;font-family:'Courier New',monospace"></span>
+  <div id="admin-bar" style="top:32px">
+    <button id="btn-darkmode" title="Dark Mode">◑</button>
+    <button id="btn-admin" title="Admin" style="font-size:13px">⚙</button>
+  </div>
 </div>
 
 <!-- CONTROLS -->
@@ -435,7 +556,6 @@
 
 <div id="footer">
   <a href="#" id="footer-json">albums.json</a>
-  <a href="#" id="toggle-add">[+ eintrag]</a>
   <span class="hint" id="footer-hint">★ = lieblingssong</span>
 </div>
 
@@ -450,89 +570,97 @@
   </div>
 </div>
 
-<!-- ADD SECTION -->
-<div id="add-section">
-  <b id="add-title">// neuer eintrag //</b>
+<!-- ADMIN PANEL (inline unter header, nur für eingeloggte) -->
+<div id="admin-panel">
+  <label><input type="checkbox" id="travel-enabled"> reiseregal anzeigen</label>
+  <button id="btn-new-entry" style="font-size:12px">+ neuer eintrag</button>
+</div>
 
-  <details>
-    <summary>github einstellungen</summary>
-    <div style="margin-top:8px">
-      <div class="row"><label>token:</label><input type="password" id="gh-token" placeholder="ghp_..."></div>
-      <div class="row"><label>user/repo:</label><input type="text" id="gh-repo" placeholder="name/repo"></div>
-      <div class="row"><label>branch:</label><input type="text" id="gh-branch" placeholder="main"></div>
-      <div class="row"><label>json-pfad:</label><input type="text" id="gh-path" placeholder="albums.json"></div>
-      <button id="btn-save-gh">speichern</button>
-      <span id="gh-saved">gespeichert.</span>
-    </div>
-  </details>
-  <br>
+<!-- POPUP -->
+<div id="popup-overlay">
+  <div id="popup-box">
+    <button id="popup-close">✕</button>
+    <b id="popup-title">// neuer eintrag //</b><br><br>
 
-  <!-- MUSIK FORM -->
-  <div id="music-form">
-    <b style="font-size:12px">1. album suchen</b><br><br>
-    <div class="row"><label>kuenstler:</label><input type="text" id="q-artist"></div>
-    <div class="row"><label>album:</label><input type="text" id="q-album"></div>
-    <button id="btn-search" style="margin-top:6px">suchen</button>
-    <button id="btn-manual" style="margin-top:6px;margin-left:6px;color:#888;border-color:#888">manuell</button>
-    <div id="status"></div>
-    <div id="mb-results"></div>
-
-    <div id="form-section" style="display:none">
-      <br><b style="font-size:12px">2. details</b><br><br>
-      <div class="row"><label>kuenstler:</label><input type="text" id="f-artist" style="background:#f2f2f2"></div>
-      <div class="row"><label>album:</label><input type="text" id="f-album" style="background:#f2f2f2"></div>
-      <div class="row"><label>jahr:</label><input type="text" id="f-year" style="background:#f2f2f2;max-width:70px"></div>
-      <div class="row"><label>genre:</label><input type="text" id="f-genre" placeholder="anpassen" list="genre-list"></div>
-      <datalist id="genre-list"></datalist>
-      <div class="row"><label>wertung (1-10):</label><input type="number" id="f-rating" min="1" max="10" step="0.5" style="max-width:60px"></div>
-      <div class="row"><label>cover url:</label><input type="text" id="f-cover" placeholder="direkte bild-url (pflicht)"></div>
-      <br>
-      <div id="song-section" style="display:none">
-        <span style="font-size:12px">lieblingssong:</span><br>
-        <div id="song-radios"></div>
+    <details>
+      <summary>github einstellungen</summary>
+      <div style="margin-top:8px">
+        <div class="row"><label>token:</label><input type="password" id="gh-token" placeholder="ghp_..."></div>
+        <div class="row"><label>user/repo:</label><input type="text" id="gh-repo" placeholder="name/repo"></div>
+        <div class="row"><label>branch:</label><input type="text" id="gh-branch" placeholder="main"></div>
+        <div class="row"><label>json-pfad:</label><input type="text" id="gh-path" placeholder="albums.json"></div>
+        <button id="btn-save-gh">speichern</button>
+        <span id="gh-saved">gespeichert.</span>
       </div>
-      <div id="song-manual" style="display:none">
-        <span style="font-size:12px">songs (kommagetrennt):</span><br>
-        <textarea id="f-songs-manual" rows="2" placeholder="Song 1, Song 2, Song 3, ..."></textarea>
-        <br><br>
-        <span style="font-size:12px">lieblingssong:</span><br>
-        <input type="text" id="f-fav-manual" placeholder="exakt wie oben eingegeben">
+    </details>
+    <br>
+
+    <!-- MUSIK FORM -->
+    <div id="music-form">
+      <b style="font-size:12px">1. album suchen</b><br><br>
+      <div class="row"><label>kuenstler:</label><input type="text" id="q-artist"></div>
+      <div class="row"><label>album:</label><input type="text" id="q-album"></div>
+      <button id="btn-search" style="margin-top:6px">suchen</button>
+      <button id="btn-manual" style="margin-top:6px;margin-left:6px;color:#888;border-color:#888">manuell</button>
+      <div id="status"></div>
+      <div id="mb-results"></div>
+
+      <div id="form-section" style="display:none">
+        <br><b style="font-size:12px">2. details</b><br><br>
+        <div class="row"><label>kuenstler:</label><input type="text" id="f-artist" style="background:#f2f2f2"></div>
+        <div class="row"><label>album:</label><input type="text" id="f-album" style="background:#f2f2f2"></div>
+        <div class="row"><label>jahr:</label><input type="text" id="f-year" style="background:#f2f2f2;max-width:70px"></div>
+        <div class="row"><label>genre:</label><input type="text" id="f-genre" placeholder="anpassen" list="genre-list"></div>
+        <datalist id="genre-list"></datalist>
+        <div class="row"><label>wertung (1-10):</label><input type="number" id="f-rating" min="1" max="10" step="0.5" style="max-width:60px"></div>
+        <div class="row"><label>cover url:</label><input type="text" id="f-cover" placeholder="direkte bild-url (pflicht)"></div>
         <br>
+        <div id="song-section" style="display:none">
+          <span style="font-size:12px">lieblingssong:</span><br>
+          <div id="song-radios"></div>
+        </div>
+        <div id="song-manual" style="display:none">
+          <span style="font-size:12px">songs (kommagetrennt):</span><br>
+          <textarea id="f-songs-manual" rows="2" placeholder="Song 1, Song 2, Song 3, ..."></textarea>
+          <br><br>
+          <span style="font-size:12px">lieblingssong:</span><br>
+          <input type="text" id="f-fav-manual" placeholder="exakt wie oben eingegeben"><br>
+        </div>
+        <br>
+        <span style="font-size:12px">rezension:</span><br>
+        <textarea id="f-review" rows="3"></textarea>
+        <br><br>
+        <button id="btn-push-music">speichern + push zu github</button>
+        <div id="push-status-music"></div>
+      </div>
+    </div>
+
+    <!-- REISE FORM -->
+    <div id="travel-form" style="display:none">
+      <b style="font-size:12px">neue reise</b><br><br>
+      <div class="row"><label>stadt:</label><input type="text" id="t-city"></div>
+      <div class="row"><label>land:</label><input type="text" id="t-country"></div>
+      <div class="row"><label>reisezeit:</label><input type="text" id="t-time" placeholder="z.B. März 2024"></div>
+      <div class="row"><label>einwohner:</label><input type="text" id="t-pop" placeholder="z.B. 3,7 Mio."></div>
+      <div class="row"><label>in 3 worten:</label><input type="text" id="t-tagline" placeholder="laut, bunt, lebendig"></div>
+      <div class="row"><label>wertung (1-10):</label><input type="number" id="t-rating" min="1" max="10" step="0.5" style="max-width:60px"></div>
+      <div class="row"><label>titelbild:</label><input type="text" id="t-cover" placeholder="covers/berlin.jpg oder volle url"></div>
+      <br>
+      <span style="font-size:12px">top 5 empfehlungen (je max. 3 wörter):</span><br>
+      <div style="margin:4px 0">
+        <input type="text" id="t-tip1" placeholder="1." style="width:98%;margin-bottom:3px">
+        <input type="text" id="t-tip2" placeholder="2." style="width:98%;margin-bottom:3px">
+        <input type="text" id="t-tip3" placeholder="3." style="width:98%;margin-bottom:3px">
+        <input type="text" id="t-tip4" placeholder="4." style="width:98%;margin-bottom:3px">
+        <input type="text" id="t-tip5" placeholder="5." style="width:98%">
       </div>
       <br>
-      <span style="font-size:12px">rezension:</span><br>
-      <textarea id="f-review" rows="3"></textarea>
+      <span style="font-size:12px">reisebericht:</span><br>
+      <textarea id="t-review" rows="4"></textarea>
       <br><br>
-      <button id="btn-push-music">speichern + push zu github</button>
-      <div id="push-status-music"></div>
+      <button id="btn-push-travel">speichern + push zu github</button>
+      <div id="push-status-travel"></div>
     </div>
-  </div>
-
-  <!-- REISE FORM -->
-  <div id="travel-form" style="display:none">
-    <b style="font-size:12px">neue reise</b><br><br>
-    <div class="row"><label>stadt:</label><input type="text" id="t-city"></div>
-    <div class="row"><label>land:</label><input type="text" id="t-country"></div>
-    <div class="row"><label>reisezeit:</label><input type="text" id="t-time" placeholder="z.B. März 2024"></div>
-    <div class="row"><label>einwohner:</label><input type="text" id="t-pop" placeholder="z.B. 3,7 Mio."></div>
-    <div class="row"><label>in 3 worten:</label><input type="text" id="t-tagline" placeholder="laut, bunt, lebendig"></div>
-    <div class="row"><label>wertung (1-10):</label><input type="number" id="t-rating" min="1" max="10" step="0.5" style="max-width:60px"></div>
-    <div class="row"><label>titelbild:</label><input type="text" id="t-cover" placeholder="covers/berlin.jpg oder volle url"></div>
-    <br>
-    <span style="font-size:12px">top 5 empfehlungen (je max. 3 wörter):</span><br>
-    <div style="margin:4px 0">
-      <input type="text" id="t-tip1" placeholder="1." style="width:98%;margin-bottom:3px">
-      <input type="text" id="t-tip2" placeholder="2." style="width:98%;margin-bottom:3px">
-      <input type="text" id="t-tip3" placeholder="3." style="width:98%;margin-bottom:3px">
-      <input type="text" id="t-tip4" placeholder="4." style="width:98%;margin-bottom:3px">
-      <input type="text" id="t-tip5" placeholder="5." style="width:98%">
-    </div>
-    <br>
-    <span style="font-size:12px">reisebericht:</span><br>
-    <textarea id="t-review" rows="4"></textarea>
-    <br><br>
-    <button id="btn-push-travel">speichern + push zu github</button>
-    <div id="push-status-travel"></div>
   </div>
 </div>
 
@@ -880,12 +1008,66 @@ async function loadCovers(list) {
   }
 }
 
-// ── PASSWORD ─────────────────────────────────────────
-document.getElementById("toggle-add").addEventListener("click", e => {
-  e.preventDefault();
-  if (unlocked) toggleAdd();
-  else { document.getElementById("pw-overlay").style.display="block"; document.getElementById("pw-input").focus(); }
+// ── DARK MODE ────────────────────────────────────────
+let darkMode = localStorage.getItem("regal_dark") === "1";
+function applyDark() {
+  document.body.classList.toggle("dark", darkMode);
+}
+applyDark();
+document.getElementById("btn-darkmode").addEventListener("click", () => {
+  darkMode = !darkMode;
+  localStorage.setItem("regal_dark", darkMode ? "1" : "0");
+  applyDark();
 });
+
+// ── TRAVEL TOGGLE ────────────────────────────────────
+let travelEnabled = localStorage.getItem("regal_travel") !== "0";
+function applyTravelEnabled() {
+  document.getElementById("mode-switch").style.display = travelEnabled ? "" : "none";
+  if (!travelEnabled && mode === "travel") {
+    mode = "music";
+    localStorage.setItem("regal_mode", "music");
+    applyMode();
+  }
+  document.getElementById("travel-enabled").checked = travelEnabled;
+}
+document.getElementById("travel-enabled").addEventListener("change", e => {
+  travelEnabled = e.target.checked;
+  localStorage.setItem("regal_travel", travelEnabled ? "1" : "0");
+  applyTravelEnabled();
+});
+
+// ── ADMIN PANEL ──────────────────────────────────────
+document.getElementById("btn-admin").addEventListener("click", () => {
+  if (!unlocked) {
+    document.getElementById("pw-overlay").style.display = "block";
+    document.getElementById("pw-input").focus();
+    return;
+  }
+  const p = document.getElementById("admin-panel");
+  p.style.display = p.style.display === "none" ? "block" : "none";
+  document.getElementById("btn-admin").classList.toggle("active", p.style.display === "block");
+  if (p.style.display === "block") applyTravelEnabled();
+});
+document.getElementById("btn-new-entry").addEventListener("click", openPopup);
+
+// ── POPUP ────────────────────────────────────────────
+function openPopup() {
+  loadGh();
+  const isTravel = mode === "travel";
+  document.getElementById("music-form").style.display  = isTravel ? "none" : "block";
+  document.getElementById("travel-form").style.display = isTravel ? "block" : "none";
+  document.getElementById("popup-overlay").style.display = "block";
+}
+function closePopup() {
+  document.getElementById("popup-overlay").style.display = "none";
+}
+document.getElementById("popup-close").addEventListener("click", closePopup);
+document.getElementById("popup-overlay").addEventListener("click", e => {
+  if (e.target === document.getElementById("popup-overlay")) closePopup();
+});
+
+// ── PASSWORD ─────────────────────────────────────────
 async function checkPw() {
   const val = document.getElementById("pw-input").value;
   const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(val));
@@ -895,7 +1077,11 @@ async function checkPw() {
     document.getElementById("pw-overlay").style.display="none";
     document.getElementById("pw-input").value="";
     document.getElementById("pw-error").style.display="none";
-    toggleAdd();
+    // admin panel öffnen nach login
+    document.getElementById("admin-panel").style.display = "block";
+    document.getElementById("btn-admin").classList.add("active");
+    applyTravelEnabled();
+    render(); // edit-buttons neu rendern
   } else {
     document.getElementById("pw-error").style.display="block";
     document.getElementById("pw-input").select();
@@ -908,12 +1094,11 @@ document.getElementById("pw-cancel").addEventListener("click", () => {
   document.getElementById("pw-error").style.display="none";
 });
 document.getElementById("pw-input").addEventListener("keydown", e => { if(e.key==="Enter") checkPw(); });
-
-function toggleAdd() {
-  const s = document.getElementById("add-section");
-  s.style.display = s.style.display==="none" ? "block" : "none";
-  if (s.style.display==="block") loadGh();
-}
+document.getElementById("pw-overlay").addEventListener("click", e => {
+  if (e.target === document.getElementById("pw-overlay")) {
+    document.getElementById("pw-overlay").style.display="none";
+  }
+});
 
 // ── GITHUB ───────────────────────────────────────────
 function saveGh() {
