@@ -434,25 +434,23 @@
   /* ── ADMIN TOOLBAR ── */
   #admin-bar {
     position: absolute;
-    top: 10px; right: 12px;
+    top: 8px; right: 10px;
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-family: "Courier New", monospace;
-    font-size: 13px;
+    gap: 8px;
   }
   #admin-bar button {
     background: none;
     border: none;
     cursor: pointer;
-    font-size: 15px;
+    font-size: 20px;
     padding: 0;
-    color: #aaa;
+    color: #888;
     line-height: 1;
   }
   body.dark #admin-bar button { color: #555; }
   #admin-bar button:hover { background: none; color: #000; }
-  body.dark #admin-bar button:hover { color: #ddd; }
+  body.dark #admin-bar button:hover { color: #ddd; background: none; }
   #admin-bar button.active { color: #000; }
   body.dark #admin-bar button.active { color: #ddd; }
 
@@ -518,13 +516,12 @@
 
 <!-- HEADER -->
 <div id="site-header" style="position:relative">
+  <div id="admin-bar">
+    <button id="btn-darkmode" title="Dark Mode">◑</button>
+    <button id="btn-admin" title="Admin">⚙</button>
+  </div>
   <h1 id="site-h1"><span>platten</span>regal</h1>
   <p class="sub" id="site-sub">albenbewertungen &mdash; subjektiv, objektiv</p>
-  <span id="artist-count" style="position:absolute;top:10px;right:12px;font-size:10px;color:#aaa;font-family:'Courier New',monospace"></span>
-  <div id="admin-bar" style="top:32px">
-    <button id="btn-darkmode" title="Dark Mode">◑</button>
-    <button id="btn-admin" title="Admin" style="font-size:13px">⚙</button>
-  </div>
 </div>
 
 <!-- CONTROLS -->
@@ -550,13 +547,16 @@
     <option value="9">9+</option>
     <option value="10">nur 10</option>
   </select>
+  <span id="controls-right" style="margin-left:auto;font-size:10px;color:#aaa;white-space:nowrap">
+    <span id="artist-count"></span>
+    <span id="footer-hint" style="margin-left:8px">★ = lieblingssong</span>
+  </span>
 </div>
 
 <div id="list"></div>
 
 <div id="footer">
   <a href="#" id="footer-json">albums.json</a>
-  <span class="hint" id="footer-hint">★ = lieblingssong</span>
 </div>
 
 <!-- PASSWORD -->
@@ -573,7 +573,11 @@
 <!-- ADMIN PANEL (inline unter header, nur für eingeloggte) -->
 <div id="admin-panel">
   <label><input type="checkbox" id="travel-enabled"> reiseregal anzeigen</label>
-  <button id="btn-new-entry" style="font-size:12px">+ neuer eintrag</button>
+  <div style="display:flex;gap:6px;align-items:center;margin-top:4px">
+    <button id="btn-new-entry" style="font-size:12px">+ neuer eintrag</button>
+    <button id="btn-save-config" style="font-size:12px">einstellung speichern</button>
+    <span id="config-status" style="font-size:11px;color:#888"></span>
+  </div>
 </div>
 
 <!-- POPUP -->
@@ -946,6 +950,7 @@ document.getElementById("search").addEventListener("input", render);
 (async () => {
   try { albums  = await (await fetch("albums.json?_="+Date.now())).json();  } catch(e) { albums=[]; }
   try { travels = await (await fetch("travels.json?_="+Date.now())).json(); } catch(e) { travels=[]; }
+  await loadConfig();
   applyMode();
   updateGenreList();
 })();
@@ -1021,7 +1026,17 @@ document.getElementById("btn-darkmode").addEventListener("click", () => {
 });
 
 // ── TRAVEL TOGGLE ────────────────────────────────────
-let travelEnabled = localStorage.getItem("regal_travel") !== "0";
+let travelEnabled = true; // default bis config geladen
+
+async function loadConfig() {
+  try {
+    const r = await fetch("config.json?_="+Date.now());
+    const cfg = await r.json();
+    if (typeof cfg.travel_enabled === "boolean") travelEnabled = cfg.travel_enabled;
+  } catch(e) { /* kein config.json = travel enabled */ }
+  applyTravelEnabled();
+}
+
 function applyTravelEnabled() {
   document.getElementById("mode-switch").style.display = travelEnabled ? "" : "none";
   if (!travelEnabled && mode === "travel") {
@@ -1029,12 +1044,39 @@ function applyTravelEnabled() {
     localStorage.setItem("regal_mode", "music");
     applyMode();
   }
-  document.getElementById("travel-enabled").checked = travelEnabled;
+  const cb = document.getElementById("travel-enabled");
+  if (cb) cb.checked = travelEnabled;
 }
+
 document.getElementById("travel-enabled").addEventListener("change", e => {
   travelEnabled = e.target.checked;
-  localStorage.setItem("regal_travel", travelEnabled ? "1" : "0");
-  applyTravelEnabled();
+});
+
+document.getElementById("btn-save-config").addEventListener("click", async () => {
+  const st = document.getElementById("config-status");
+  const token  = localStorage.getItem("gh_token");
+  const repo   = localStorage.getItem("gh_repo");
+  const branch = localStorage.getItem("gh_branch") || "main";
+  if (!token || !repo) { st.textContent = "github einstellungen fehlen."; return; }
+  st.textContent = "speichere...";
+  const cfg = { travel_enabled: travelEnabled };
+  try {
+    let sha = null;
+    const shaRes = await fetch(`https://api.github.com/repos/${repo}/contents/config.json?ref=${branch}`,
+      { headers: { Authorization: `token ${token}`, Accept: "application/vnd.github+json" } });
+    if (shaRes.ok) sha = (await shaRes.json()).sha;
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(cfg, null, 2))));
+    const body = { message: "config: update settings", content, branch };
+    if (sha) body.sha = sha;
+    const putRes = await fetch(`https://api.github.com/repos/${repo}/contents/config.json`, {
+      method: "PUT",
+      headers: { Authorization: `token ${token}`, Accept: "application/vnd.github+json", "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+    if (!putRes.ok) { const e = await putRes.json(); throw new Error(e.message); }
+    st.textContent = "✓ gespeichert. ~30 sek bis live.";
+    applyTravelEnabled();
+  } catch(e) { st.textContent = "fehler: " + e.message; }
 });
 
 // ── ADMIN PANEL ──────────────────────────────────────
