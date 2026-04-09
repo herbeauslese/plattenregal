@@ -383,13 +383,14 @@
   .entry-songs-inner {
     display: inline-block;
     white-space: nowrap;
+    will-change: transform;
   }
   .entry-songs-inner.scrolling {
-    animation: songscroll var(--scroll-dur, 12s) linear infinite;
+    animation: songscroll var(--scroll-dur, 20s) linear infinite;
   }
   @keyframes songscroll {
-    0%   { transform: translateX(0); }
-    100% { transform: translateX(var(--scroll-dist, -50%)); }
+    0%   { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(var(--scroll-dist, -50%), 0, 0); }
   }
 
   @media (max-width: 480px) {
@@ -419,6 +420,9 @@
       font-size: 11px;
       min-width: 100%;
     }
+
+    /* Songs: keep small on mobile */
+    .entry-songs { font-size: 11px; }
   }
 
   /* ── ACCENT COLOR ── */
@@ -1018,7 +1022,7 @@ function subRatingsFull(a) {
 function entryMusicHTML(a) {
   const songs = a.songs.map(s =>
     s === a.favorite_song ? `<span class="fav">${s}</span>` : s
-  ).join(", ");
+  ).join("  •  ");
   const cid = "cv-" + (a.artist+a.album).replace(/[^a-zA-Z0-9]/g,"");
   const genres = a.genre ? a.genre.split(",").map(g=>g.trim()).filter(Boolean).join(" · ") : "";
   const eid = "edit-" + (a.artist+a.album).replace(/[^a-zA-Z0-9]/g,"");
@@ -1315,7 +1319,7 @@ function initTickers() {
     inner.innerHTML = txt + '<span style="padding:0 24px">·</span>' + txt;
     const totalW = inner.scrollWidth;
     const halfW = totalW / 2;
-    const speed = 40; // px per second
+    const speed = 24; // px per second (slower)
     const dur = halfW / speed;
     inner.style.setProperty("--scroll-dist", "-" + halfW + "px");
     inner.style.setProperty("--scroll-dur", dur.toFixed(1) + "s");
