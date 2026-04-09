@@ -478,35 +478,45 @@
 
   /* ── SUB-RATINGS ── */
 
-  /* Full: 5 Sterne pro Zeile */
+  /* Full: alle 3 nebeneinander, zentriert */
   .sub-ratings-full {
-    margin: 0 0 8px 0;
-    padding-bottom: 8px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 20px;
+    margin: 0 0 10px 0;
+    padding: 8px 0 10px 0;
     border-bottom: 1px dashed #e0e0e0;
+    flex-wrap: wrap;
   }
   body.dark .sub-ratings-full { border-color: #333; }
   .srf-row {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 6px;
-    margin-bottom: 5px;
+    gap: 4px;
     font-size: 11px;
     font-family: "Courier New", monospace;
     color: #666;
   }
   body.dark .srf-row { color: #888; }
   .srf-label {
-    width: 72px;
-    flex-shrink: 0;
     display: flex;
     align-items: center;
     gap: 3px;
+    white-space: nowrap;
   }
   .srf-stars { display: flex; gap: 2px; }
   .srf-star { font-size: 13px; line-height: 1; }
   .srf-star.filled { color: var(--accent); }
   .srf-star.empty  { color: #ddd; }
   body.dark .srf-star.empty { color: #444; }
+
+  @media (max-width: 360px) {
+    .srf-star { font-size: 11px; }
+    .sub-ratings-full { gap: 12px; }
+    .srf-row { font-size: 10px; }
+  }
   .srf-tooltip {
     display: inline-flex;
     align-items: center;
