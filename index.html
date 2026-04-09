@@ -222,7 +222,6 @@
   .stack-peek:not(.open):not(.stack-single) .entry .entry-toggle,
   .stack-peek:not(.open):not(.stack-single) .entry .entry-review-preview,
   .stack-peek:not(.open):not(.stack-single) .entry .sub-ratings-full,
-  .stack-peek:not(.open):not(.stack-single) .entry .sub-ratings-mini,
   .stack-peek:not(.open):not(.stack-single) .entry .entry-songs-preview,
   .stack-peek:not(.open):not(.stack-single) .entry > div > div[id] { display: none; }
   /* Rating kompakter */
@@ -397,71 +396,6 @@
   body.dark details summary { color: #666; }
 
   /* ── SUB-RATINGS ── */
-
-  /* Mini: 3 Kreis-Indikatoren inline in der Meta-Zeile */
-  .sub-ratings-mini {
-    display: inline-flex;
-    gap: 5px;
-    align-items: center;
-    vertical-align: middle;
-    margin-left: 8px;
-    flex-shrink: 0;
-  }
-  .srm-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1px;
-    cursor: default;
-    flex-shrink: 0;
-    position: relative;
-  }
-  .srm-label {
-    font-size: 8px;
-    font-family: "Courier New", monospace;
-    color: #aaa;
-    line-height: 1;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  body.dark .srm-label { color: #555; }
-  /* Äußerer Ring */
-  .srm-circle {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    border: 1.5px solid var(--accent);
-    position: relative;
-    overflow: hidden;
-    opacity: 0.85;
-  }
-  /* Füllung von unten */
-  .srm-circle-fill {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    background: var(--accent);
-  }
-  /* Tooltip */
-  .srm-item:hover .srm-tip {
-    display: block;
-  }
-  .srm-tip {
-    display: none;
-    position: absolute;
-    bottom: calc(100% + 5px);
-    left: 50%;
-    transform: translateX(-50%);
-    background: #111;
-    color: #eee;
-    font-size: 10px;
-    font-family: "Courier New", monospace;
-    padding: 3px 7px;
-    white-space: nowrap;
-    z-index: 60;
-    border: 1px solid #333;
-    pointer-events: none;
-  }
-  body.dark .srm-tip { background: #222; border-color: #555; }
 
   /* Full: 5 Sterne pro Zeile */
   .sub-ratings-full {
@@ -984,20 +918,6 @@ function starsHTML(val, cls) {
   return h;
 }
 
-function subRatingsMini(a) {
-  const subs = a.sub_ratings || {};
-  const initials = { hoerspass: "H", edginess: "E", harmonie: "H₂" };
-  return SUB_CATEGORIES.map(cat => {
-    const v = Math.max(0, Math.min(5, subs[cat.key] || 0));
-    const fillPct = Math.round((v / 5) * 100);
-    const init = { hoerspass: "Hø", edginess: "Ed", harmonie: "Ha" }[cat.key] || cat.label.slice(0,2);
-    return `<span class="srm-item">
-      <span class="srm-label">${init}</span>
-      <span class="srm-circle"><span class="srm-circle-fill" style="height:${fillPct}%"></span></span>
-      <span class="srm-tip">${cat.label} ${v}/5</span>
-    </span>`;
-  }).join("");
-}
 
 function subRatingsFull(a) {
   const subs = a.sub_ratings || {};
@@ -1038,7 +958,7 @@ function entryMusicHTML(a) {
     <div style="position:relative">
       <div class="entry-head entry-clickable" onclick="toggleEntry('${tid}')">${a.album}${editBtn}</div>
       <span class="entry-rating">${Number(a.rating)}<span class="rating-denom">/10</span></span>
-      <div class="entry-meta">${a.year}${genres ? " · "+genres : ""}<span class="sub-ratings-mini">${subRatingsMini(a)}</span></div>
+      <div class="entry-meta">${a.year}${genres ? " · "+genres : ""}</div>
       ${songsHTML}
       <div class="entry-toggle" onclick="toggleEntry('${tid}')">
         <span class="entry-toggle-label">${a.review ? "rezension lesen" : "details"}</span>
