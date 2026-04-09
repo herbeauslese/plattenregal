@@ -298,7 +298,12 @@
     ],
     "review": "Ich weiß nicht so richtig, wie ich die Musik von MJ Lendermann beschreiben soll.  Er spielt auf dem Album selbst alle Instrumente ein — Gitarre, Bass, Schlagzeug und Orgel.\nEs ist halt Indie/Alternative Rock, aber irgendwie mit mehr Gefühl und mehr Druck. Es ist schon besonderer als die meisten anderen Indie Alben da draußen. \nIch mag die einzelnen Songs sehr! Bin gespannt auf mehr. \nPS.: Wristwatch & She's Leaving You sind beide eine 10/10. ",
     "cover_url": "https://upload.wikimedia.org/wikipedia/en/d/d8/MJ_Lenderman_-_Manning_Fireworks.png",
-    "reviewed_at": "2026-04-01T00:00:00.000Z"
+    "reviewed_at": "2026-04-01T00:00:00.000Z",
+    "sub_ratings": {
+      "hoerspass": 4,
+      "edginess": 3,
+      "harmonie": 4
+    }
   },
   {
     "artist": "Wednesday",
