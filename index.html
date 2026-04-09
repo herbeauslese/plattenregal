@@ -348,8 +348,29 @@
     align-items: center;
     gap: 5px;
     flex-wrap: nowrap;
+    position: relative;
   }
   #controls-top #search { flex: 1; min-width: 0; }
+  #controls-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1px;
+    flex-shrink: 0;
+    font-family: "Courier New", monospace;
+  }
+  #artist-count {
+    font-size: 10px;
+    color: #aaa;
+    white-space: nowrap;
+  }
+  body.dark #artist-count { color: #555; }
+  #footer-hint {
+    font-size: 9px;
+    color: #ccc;
+    white-space: nowrap;
+  }
+  body.dark #footer-hint { color: #444; }
   #btn-filter-toggle {
     font-size: 14px;
     padding: 2px 7px;
@@ -380,11 +401,13 @@
     white-space: nowrap;
     position: relative;
     font-size: 11px;
+    line-height: 1.5;
   }
   .entry-songs-inner {
     display: inline-block;
     white-space: nowrap;
     will-change: transform;
+    font-size: 11px;
   }
   .entry-songs-inner.scrolling {
     animation: songscroll var(--scroll-dur, 20s) linear infinite;
@@ -408,8 +431,8 @@
     }
 
     /* Bigger rating on mobile */
-    .entry-rating { font-size: 20px; }
-    .entry-rating .rating-denom { font-size: 11px; }
+    .entry-rating { font-size: 26px; }
+    .entry-rating .rating-denom { font-size: 12px; }
 
     /* More breathing room between entries */
     .entry { padding: 14px 0 12px 0; }
@@ -422,9 +445,11 @@
       min-width: 100%;
     }
 
-    /* Songs: keep small on mobile */
+    /* Songs: force small on mobile */
     .entry-songs,
-    .entry-songs-inner { font-size: 11px !important; }
+    .entry-songs-inner,
+    .entry-songs .fav,
+    .entry-songs span { font-size: 11px !important; }
   }
 
   /* ── ACCENT COLOR ── */
@@ -800,10 +825,10 @@
   <div id="controls-top">
     <input type="text" id="search" placeholder="suche...">
     <button id="btn-filter-toggle" title="Filter & Sortierung" aria-label="Filter">⇅</button>
-    <span id="controls-right" style="margin-left:auto;font-size:10px;color:#aaa;white-space:nowrap">
+    <div id="controls-right">
       <span id="artist-count"></span>
-      <span id="footer-hint" style="margin-left:8px">★ = lieblingssong</span>
-    </span>
+      <span id="footer-hint">★ = lieblingssong</span>
+    </div>
   </div>
   <div id="controls-filters">
     <span style="font-size:11px;color:#888">sort:</span>
