@@ -337,11 +337,88 @@
   textarea { width: 100%; margin-top: 3px; }
   #gh-saved { font-size: 11px; color: #555; margin-left: 8px; display: none; }
 
+  /* ── CONTROLS RESTRUCTURE ── */
+  #controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  #controls-top {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: nowrap;
+  }
+  #controls-top #search { flex: 1; min-width: 0; }
+  #btn-filter-toggle {
+    font-size: 14px;
+    padding: 2px 7px;
+    flex-shrink: 0;
+    border: 1px solid #ccc;
+    color: #888;
+    background: none;
+  }
+  #btn-filter-toggle.active { color: var(--accent); border-color: var(--accent); background: none; }
+  body.dark #btn-filter-toggle { border-color: #444; color: #666; }
+  body.dark #btn-filter-toggle.active { color: var(--accent); border-color: var(--accent); }
+  #btn-filter-toggle:hover { background: none; color: var(--accent); }
+  #controls-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-items: center;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed #e0e0e0;
+  }
+  body.dark #controls-filters { border-color: #333; }
+  #controls-filters.hidden { display: none; }
+
+  /* Songs ticker */
+  .entry-songs {
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+  }
+  .entry-songs-inner {
+    display: inline-block;
+    white-space: nowrap;
+  }
+  .entry-songs-inner.scrolling {
+    animation: songscroll var(--scroll-dur, 12s) linear infinite;
+  }
+  @keyframes songscroll {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(var(--scroll-dist, -50%)); }
+  }
+
   @media (max-width: 480px) {
     h1 { font-size: 22px; }
     .entry-head { font-size: 14px; }
-    #controls input[type=text] { width: 100px; }
     .row label { width: 80px; font-size: 10px; }
+
+    /* Bigger cover */
+    .entry-cover {
+      width: 50px; height: 50px;
+    }
+    .stack-peek:not(.open):not(.stack-single) .entry .entry-cover {
+      width: 24px; height: 24px;
+    }
+
+    /* Bigger rating on mobile */
+    .entry-rating { font-size: 20px; }
+    .entry-rating .rating-denom { font-size: 11px; }
+
+    /* More breathing room between entries */
+    .entry { padding: 14px 0 12px 0; }
+    .stack-peek:not(.open):not(.stack-single) .entry { padding: 6px 0; }
+
+    /* Bigger toggle tap target */
+    .entry-toggle {
+      padding: 8px 10px;
+      font-size: 11px;
+      min-width: 100%;
+    }
   }
 
   /* ── ACCENT COLOR ── */
@@ -704,31 +781,36 @@
 
 <!-- CONTROLS -->
 <div id="controls">
-  <span style="font-size:11px;color:#888">sort:</span>
-  <select id="sort-key">
-    <option value="primary">artist</option>
-    <option value="secondary">album</option>
-    <option value="year">jahr</option>
-    <option value="genre">genre</option>
-    <option value="rating">wertung</option>
-    <option value="index">datum</option>
-  </select>
-  <select id="sort-dir">
-    <option value="1">↑</option>
-    <option value="-1">↓</option>
-  </select>
-  <input type="text" id="search" placeholder="suche...">
-  <select id="min-rating">
-    <option value="0">alle</option>
-    <option value="7">7+</option>
-    <option value="8">8+</option>
-    <option value="9">9+</option>
-    <option value="10">nur 10</option>
-  </select>
-  <span id="controls-right" style="margin-left:auto;font-size:10px;color:#aaa;white-space:nowrap">
-    <span id="artist-count"></span>
-    <span id="footer-hint" style="margin-left:8px">★ = lieblingssong</span>
-  </span>
+  <div id="controls-top">
+    <input type="text" id="search" placeholder="suche...">
+    <button id="btn-filter-toggle" title="Filter & Sortierung" aria-label="Filter">⇅</button>
+    <span id="controls-right" style="margin-left:auto;font-size:10px;color:#aaa;white-space:nowrap">
+      <span id="artist-count"></span>
+      <span id="footer-hint" style="margin-left:8px">★ = lieblingssong</span>
+    </span>
+  </div>
+  <div id="controls-filters">
+    <span style="font-size:11px;color:#888">sort:</span>
+    <select id="sort-key">
+      <option value="primary">artist</option>
+      <option value="secondary">album</option>
+      <option value="year">jahr</option>
+      <option value="genre">genre</option>
+      <option value="rating">wertung</option>
+      <option value="index">datum</option>
+    </select>
+    <select id="sort-dir">
+      <option value="1">↑</option>
+      <option value="-1">↓</option>
+    </select>
+    <select id="min-rating">
+      <option value="0">alle</option>
+      <option value="7">7+</option>
+      <option value="8">8+</option>
+      <option value="9">9+</option>
+      <option value="10">nur 10</option>
+    </select>
+  </div>
 </div>
 
 <div id="list"></div>
@@ -948,9 +1030,12 @@ function entryMusicHTML(a) {
     ? new Date(a.reviewed_at).toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit",year:"numeric"})
     : "";
 
-  // Songs nur einmal — im collapsed Zustand sichtbar, im body nicht nochmal
+  // Songs als Ticker — einmal rendern, scrollt wenn nötig
+  const songsInner = songs
+    ? `<span class="entry-songs-inner" id="ticker-${tid}">${songs}</span>`
+    : "";
   const songsHTML = songs
-    ? `<div class="entry-songs">${songs}</div>`
+    ? `<div class="entry-songs" id="songs-${tid}">${songsInner}</div>`
     : "";
 
   return `<div class="entry" id="${tid}">
@@ -1083,6 +1168,8 @@ function render() {
     loadCovers(coverList);
   }
   updateArtistCount();
+  // init tickers after DOM is painted
+  requestAnimationFrame(() => requestAnimationFrame(initTickers));
 }
 
 function toggleGroup(id, label) {
@@ -1191,6 +1278,53 @@ async function saveEdit(eid, idx) {
   })
 );
 document.getElementById("search").addEventListener("input", render);
+
+// ── FILTER TOGGLE ─────────────────────────────────────
+const filtersEl = document.getElementById("controls-filters");
+const filterBtn = document.getElementById("btn-filter-toggle");
+// Desktop: filters always visible; Mobile: collapsible
+function applyFilterVisibility() {
+  if (window.innerWidth > 480) {
+    filtersEl.classList.remove("hidden");
+    filterBtn.style.display = "none";
+  } else {
+    filterBtn.style.display = "";
+    // default hidden on mobile
+    if (!filterBtn.dataset.init) {
+      filtersEl.classList.add("hidden");
+      filterBtn.dataset.init = "1";
+    }
+  }
+}
+applyFilterVisibility();
+window.addEventListener("resize", applyFilterVisibility);
+filterBtn.addEventListener("click", () => {
+  const hidden = filtersEl.classList.toggle("hidden");
+  filterBtn.classList.toggle("active", !hidden);
+});
+
+// ── SONG TICKER ───────────────────────────────────────
+function initTickers() {
+  document.querySelectorAll(".entry-songs").forEach(container => {
+    const inner = container.querySelector(".entry-songs-inner");
+    if (!inner) return;
+    // Only scroll if text overflows
+    if (inner.scrollWidth <= container.clientWidth + 2) return;
+    // Duplicate text for seamless loop
+    const txt = inner.innerHTML;
+    inner.innerHTML = txt + '<span style="padding:0 24px">·</span>' + txt;
+    const totalW = inner.scrollWidth;
+    const halfW = totalW / 2;
+    const speed = 40; // px per second
+    const dur = halfW / speed;
+    inner.style.setProperty("--scroll-dist", "-" + halfW + "px");
+    inner.style.setProperty("--scroll-dur", dur.toFixed(1) + "s");
+    inner.classList.add("scrolling");
+    // Pause on hover/touch
+    container.addEventListener("mouseenter", () => inner.style.animationPlayState = "paused");
+    container.addEventListener("mouseleave", () => inner.style.animationPlayState = "running");
+  });
+}
 
 // ── DATEN LADEN ──────────────────────────────────────
 (async () => {
