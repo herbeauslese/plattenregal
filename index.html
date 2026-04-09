@@ -196,23 +196,44 @@
   .artist-group:last-child .entry:last-child,
   .stack-single .entry { border-bottom: 1px solid #000; }
 
-  /* eingeklappt */
+  /* eingeklappt (Gruppen mit mehreren Alben) */
   .stack-peek:not(.open):not(.stack-single) .entry {
     display: block;
-    padding: 5px 0;
+    padding: 4px 0;
     border-bottom: 1px solid #eee;
   }
-  .stack-peek:not(.open):not(.stack-single) .entry .entry-cover { width: 22px; height: 22px; margin: 2px 8px 0 0; float: left; flex-shrink: 0; }
-  .stack-peek:not(.open):not(.stack-single) .entry .entry-head { font-size: 13px; margin: 0 0 1px 0; }
-  .stack-peek:not(.open):not(.stack-single) .entry .entry-meta { display: block; margin: 0; }
-  .stack-peek:not(.open):not(.stack-single) .entry .entry-review,
-  .stack-peek:not(.open):not(.stack-single) .entry .entry-songs,
-  .stack-peek:not(.open):not(.stack-single) .entry .entry-tips,
+  body.dark .stack-peek:not(.open):not(.stack-single) .entry { border-color: #2a2a2a; }
+  .stack-peek:not(.open):not(.stack-single) .entry .entry-cover {
+    width: 22px; height: 22px;
+    margin: 2px 8px 2px 0;
+    float: left;
+  }
+  /* Innerer wrapper: braucht position:relative damit .entry-rating absolut greift */
+  .stack-peek:not(.open):not(.stack-single) .entry > div { position: relative; }
+  .stack-peek:not(.open):not(.stack-single) .entry .entry-head {
+    font-size: 13px;
+    margin: 0;
+    padding-right: 40px;
+    line-height: 1.3;
+  }
+  /* alles außer Albumname + Rating ausblenden */
+  .stack-peek:not(.open):not(.stack-single) .entry .entry-meta,
   .stack-peek:not(.open):not(.stack-single) .entry .entry-body,
   .stack-peek:not(.open):not(.stack-single) .entry .entry-toggle,
   .stack-peek:not(.open):not(.stack-single) .entry .entry-review-preview,
   .stack-peek:not(.open):not(.stack-single) .entry .sub-ratings-full,
-  .stack-peek:not(.open):not(.stack-single) .entry > div[style] { display: none; }
+  .stack-peek:not(.open):not(.stack-single) .entry .sub-ratings-mini,
+  .stack-peek:not(.open):not(.stack-single) .entry .entry-songs-preview,
+  .stack-peek:not(.open):not(.stack-single) .entry > div > div[id] { display: none; }
+  /* Rating kompakter */
+  .stack-peek:not(.open):not(.stack-single) .entry .entry-rating {
+    font-size: 11px;
+    top: 2px;
+    right: 0;
+    color: #888;
+  }
+  body.dark .stack-peek:not(.open):not(.stack-single) .entry .entry-rating { color: #666; }
+  .stack-peek:not(.open):not(.stack-single) .entry .entry-rating .rating-denom { font-size: 8px; }
   .stack-peek:not(.open):not(.stack-single) .entry:last-child { border-bottom: none; }
 
   /* offen */
@@ -326,12 +347,12 @@
 
   /* ── ACCENT COLOR ── */
   :root {
-    --accent: #F57600;
-    --accent-dim: #d96800;
+    --accent: #3B684B;
+    --accent-dim: #2d5239;
   }
   body.dark {
-    --accent: #FFB570;
-    --accent-dim: #e09050;
+    --accent: #BEDAC8;
+    --accent-dim: #a0c4ae;
   }
 
   /* ── DARK MODE ── */
@@ -380,15 +401,15 @@
   /* Mini: 3 einzelne Sterne, vertikal gefüllt */
   .sub-ratings-mini {
     display: flex;
-    gap: 5px;
-    margin: 5px 0 4px 0;
+    gap: 7px;
+    margin: 6px 0 5px 0;
     align-items: center;
   }
   .srm-item {
     position: relative;
-    width: 15px;
-    height: 15px;
-    font-size: 15px;
+    width: 22px;
+    height: 22px;
+    font-size: 22px;
     line-height: 1;
     display: inline-block;
     flex-shrink: 0;
@@ -397,7 +418,7 @@
     content: "★";
     position: absolute;
     inset: 0;
-    color: #ddd;
+    color: #e0e0e0;
   }
   body.dark .srm-item::before { color: #3a3a3a; }
   .srm-item::after {
