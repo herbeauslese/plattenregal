@@ -16,6 +16,8 @@
     padding: 16px 14px 40px 14px;
     max-width: 680px;
     margin: 0 auto;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
 
   /* ── MODE SWITCH ── */
@@ -255,8 +257,9 @@
 
 
 
-  .fav { font-weight: bold; text-decoration: underline; text-underline-offset: 2px; }
-  .fav::after { content: "★"; font-size: 10px; vertical-align: super; line-height: 0; color: var(--accent); }
+  .fav { font-weight: bold; text-decoration: underline; text-underline-offset: 2px; font-size: inherit; }
+  .fav::after { content: "★"; font-size: 0.8em; vertical-align: super; line-height: 0; color: var(--accent); }
+  .entry-songs .fav { font-size: 11px; }
 
   /* ── FOOTER ── */
   #footer {
@@ -338,24 +341,32 @@
   #gh-saved { font-size: 11px; color: #555; margin-left: 8px; display: none; }
 
   /* ── CONTROLS RESTRUCTURE ── */
+
+  /* Desktop: alles in einer Zeile wie vorher, controls-right rechts */
   #controls {
     display: flex;
-    flex-direction: column;
-    gap: 0;
-  }
-  #controls-top {
-    display: flex;
-    align-items: center;
+    flex-wrap: wrap;
     gap: 5px;
-    flex-wrap: nowrap;
+    align-items: center;
     position: relative;
   }
-  #controls-top #search { flex: 1; min-width: 0; }
+  /* controls-top auf Desktop = unsichtbarer wrapper, Filter direkt inline */
+  #controls-top {
+    display: contents; /* Desktop: kein eigenes Layout, Kinder direkt in #controls */
+  }
+  #controls-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-items: center;
+  }
   #controls-right {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
+    justify-content: center;
     gap: 1px;
+    margin-left: auto;
     flex-shrink: 0;
     font-family: "Courier New", monospace;
   }
@@ -363,12 +374,14 @@
     font-size: 10px;
     color: #aaa;
     white-space: nowrap;
+    line-height: 1.3;
   }
   body.dark #artist-count { color: #555; }
   #footer-hint {
     font-size: 9px;
     color: #ccc;
     white-space: nowrap;
+    line-height: 1.3;
   }
   body.dark #footer-hint { color: #444; }
   #btn-filter-toggle {
@@ -383,31 +396,55 @@
   body.dark #btn-filter-toggle { border-color: #444; color: #666; }
   body.dark #btn-filter-toggle.active { color: var(--accent); border-color: var(--accent); }
   #btn-filter-toggle:hover { background: none; color: var(--accent); }
+  /* Desktop: filter button hidden, filters always inline, no separator */
+  #btn-filter-toggle { display: none; }
   #controls-filters {
     display: flex;
     flex-wrap: wrap;
     gap: 5px;
     align-items: center;
-    margin-top: 6px;
-    padding-top: 6px;
-    border-top: 1px dashed #e0e0e0;
   }
-  body.dark #controls-filters { border-color: #333; }
-  #controls-filters.hidden { display: none; }
+  #controls-filters.hidden { display: flex; } /* always visible on desktop */
+
+  @media (max-width: 480px) {
+    /* Mobile: controls stacked, toggle visible */
+    #controls {
+      flex-direction: column;
+      gap: 0;
+      align-items: stretch;
+    }
+    #controls-top {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    #controls-top #search { flex: 1; min-width: 0; }
+    #btn-filter-toggle { display: inline-block; }
+    #controls-filters {
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px dashed #e0e0e0;
+    }
+    body.dark #controls-filters { border-color: #333; }
+    #controls-filters.hidden { display: none; }
+    #controls-right {
+      /* On mobile right is inside controls-top */
+    }
+  }
 
   /* Songs ticker */
   .entry-songs {
     overflow: hidden;
     white-space: nowrap;
     position: relative;
-    font-size: 11px;
+    font-size: 11px !important;
     line-height: 1.5;
   }
   .entry-songs-inner {
     display: inline-block;
     white-space: nowrap;
     will-change: transform;
-    font-size: 11px;
+    font-size: 11px !important;
   }
   .entry-songs-inner.scrolling {
     animation: songscroll var(--scroll-dur, 20s) linear infinite;
@@ -622,14 +659,18 @@
 
   /* volle Songs im expanded body */
   .entry-songs {
-    font-size: 11px;
     color: #333;
-    line-height: 1.6;
     border-left: 2px solid var(--accent);
     padding-left: 8px;
     margin-bottom: 4px;
   }
   body.dark .entry-songs { color: #aaa; }
+  /* Nuclear: force 11px on songs and every descendant */
+  .entry-songs, .entry-songs *, .entry-songs-inner, .entry-songs-inner * {
+    font-size: 11px !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+  }
 
   /* cover pixel canvas */
   .entry-cover {
@@ -1073,10 +1114,10 @@ function entryMusicHTML(a) {
 
   // Songs als Ticker — einmal rendern, scrollt wenn nötig
   const songsInner = songs
-    ? `<span class="entry-songs-inner" id="ticker-${tid}">${songs}</span>`
+    ? `<span class="entry-songs-inner" id="ticker-${tid}" style="font-size:11px">${songs}</span>`
     : "";
   const songsHTML = songs
-    ? `<div class="entry-songs" id="songs-${tid}">${songsInner}</div>`
+    ? `<div class="entry-songs" id="songs-${tid}" style="font-size:11px">${songsInner}</div>`
     : "";
 
   return `<div class="entry" id="${tid}">
@@ -1349,19 +1390,25 @@ function initTickers() {
   document.querySelectorAll(".entry-songs").forEach(container => {
     const inner = container.querySelector(".entry-songs-inner");
     if (!inner) return;
+    if (inner.dataset.tickerInit) return;
     // Only scroll if text overflows
     if (inner.scrollWidth <= container.clientWidth + 2) return;
-    // Duplicate text for seamless loop
-    const txt = inner.innerHTML;
-    inner.innerHTML = txt + '<span style="padding:0 24px">·</span>' + txt;
+    inner.dataset.tickerInit = "1";
+    // Clone existing children for seamless loop (no innerHTML = font-size preserved)
+    const sep = document.createElement("span");
+    sep.style.padding = "0 20px";
+    sep.style.fontSize = "11px";
+    sep.textContent = "·";
+    const clone = inner.cloneNode(true);
+    inner.appendChild(sep);
+    inner.appendChild(clone);
     const totalW = inner.scrollWidth;
     const halfW = totalW / 2;
-    const speed = 24; // px per second (slower)
+    const speed = 24;
     const dur = halfW / speed;
     inner.style.setProperty("--scroll-dist", "-" + halfW + "px");
     inner.style.setProperty("--scroll-dur", dur.toFixed(1) + "s");
     inner.classList.add("scrolling");
-    // Pause on hover/touch
     container.addEventListener("mouseenter", () => inner.style.animationPlayState = "paused");
     container.addEventListener("mouseleave", () => inner.style.animationPlayState = "running");
   });
