@@ -436,5 +436,30 @@
       "edginess": 4,
       "harmonie": 3
     }
+  },
+  {
+    "artist": "Nirvana",
+    "album": "Nevermind",
+    "year": 1991,
+    "genre": "Grunge",
+    "rating": 9,
+    "favorite_song": "Come as You Are",
+    "songs": [
+      "Smells Like Teen Spirit",
+      "In Bloom",
+      "Come as You Are",
+      "Breed",
+      "Lithium",
+      "Polly",
+      "Territorial Pissings",
+      "Drain You",
+      "Lounge Act",
+      "Stay Away",
+      "On a Plain",
+      "Something in the Way / Endless, Nameless"
+    ],
+    "review": "Curt wollte eigentlich keine Doppelspur-Vocals aufnehmen. Der Produzent Butch Vig wusste aber, dass es den Songs mehr Fülle geben würde.(womit er recht behaben sollte) Da er wusste dass Cobain ein John-Lennon-Fan war, sagte er ihm schlicht: \"John Lennon hat das auch so gemacht\" — und Cobain stimmte sofort zu.\nTja, ich bin kein John Lennon Fan (Sorry John), aber ich bin ei großer Curt Fan. Man kann nicht viel zu \"Nevermind\" sagen, als das es einfach eine der besten Grunge Alben jemals ist. Danke Curt und danke John, dass du Curt überzeugen konntest!",
+    "cover_url": "https://upload.wikimedia.org/wikipedia/en/b/b7/NirvanaNevermindalbumcover.jpg",
+    "reviewed_at": "2026-04-10T06:35:42.955Z"
   }
 ]
