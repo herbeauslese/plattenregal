@@ -342,13 +342,14 @@
 
   /* ── CONTROLS RESTRUCTURE ── */
 
-  /* Desktop: alles in einer Zeile wie vorher, controls-right rechts */
+  /* Desktop: alles in einer Zeile wie vorher, controls-right absolut oben rechts */
   #controls {
     display: flex;
     flex-wrap: wrap;
     gap: 5px;
     align-items: center;
     position: relative;
+    padding-right: 80px; /* Platz für controls-right */
   }
   /* controls-top auf Desktop = unsichtbarer wrapper, Filter direkt inline */
   #controls-top {
@@ -364,10 +365,10 @@
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    justify-content: center;
     gap: 1px;
-    margin-left: auto;
-    flex-shrink: 0;
+    position: absolute;
+    top: 6px;
+    right: 8px;
     font-family: "Courier New", monospace;
   }
   #artist-count {
@@ -467,9 +468,14 @@
       width: 24px; height: 24px;
     }
 
-    /* Bigger rating on mobile */
-    .entry-rating { font-size: 26px; }
-    .entry-rating .rating-denom { font-size: 12px; }
+    /* Bigger rating on mobile — aligned top with album name */
+    .entry-rating {
+      font-size: 30px;
+      top: 0;
+      right: 0;
+      line-height: 1;
+    }
+    .entry-rating .rating-denom { font-size: 13px; }
 
     /* More breathing room between entries */
     .entry { padding: 14px 0 12px 0; }
