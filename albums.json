@@ -581,5 +581,47 @@
       "edginess": 3,
       "harmonie": 4
     }
+  },
+  {
+    "artist": "The Smiths",
+    "album": "Louder Than Bombs",
+    "year": 1987,
+    "genre": "New Wave, Alternative Rock, Soft Rock",
+    "rating": 9,
+    "favorite_song": "Ask",
+    "songs": [
+      "Is It Really So Strange?",
+      "Sheila Take a Bow",
+      "Shoplifters of the World Unite",
+      "Sweet and Tender Hooligan",
+      "Half a Person",
+      "London",
+      "Panic",
+      "Girl Afraid",
+      "Shakespeare's Sister",
+      "William, It Was Really Nothing",
+      "You Just Haven't Earned It Yet, Baby",
+      "Heaven Knows I'm Miserable Now",
+      "Ask",
+      "Golden Lights",
+      "Oscillate Wildly",
+      "These Things Take Time",
+      "Rubber Ring",
+      "Back to the Old House",
+      "Hand in Glove",
+      "Stretch Out and Wait",
+      "Please Please Please Let Me Get What I Want",
+      "This Night Has Opened My Eyes",
+      "Unloveable",
+      "Asleep"
+    ],
+    "review": "24 Songs, eine volle Ladung Smiths - in einer Compilation? Aber warum eigentlich?\nLouder Than Bombs ist keine Sammlung neu eingespielter Songs, sondern wurde zusammengestellt, um den US-Fans nachzuholen, was ihnen fehlte: Singles, B-Seiten und Tracks aus britischen Compilations wie Hatful of Hollow, die in den USA nie erschienen waren. \nWeil es so gut ankam wurde es übrigens dann auch noch in UK veröffentlicht, wo man viele der Songs ja schon kannte. \n\n24 Songs, und viele sind echt gut. Hier meine geheimen Favoriten: \"Ask\", \"Panic\", \"Asleep\" (was das traurigste Lied sein muss, das jemals geschrieben wurde), oder Rubber Ring. \nAber natürlich auch Klassiker aus der schon bekannten brittischen Version wie \"heaven Knows I'm Miserable Now\". \n\nIch mag das ALbum echt gern, auch wenn manche Songs vllt nicht umbedingt dabei hätten sein müssen. ",
+    "cover_url": "https://upload.wikimedia.org/wikipedia/en/6/6a/LouderThanBombs.jpg",
+    "reviewed_at": "2026-04-11T16:50:44.615Z",
+    "sub_ratings": {
+      "hoerspass": 5,
+      "edginess": 3,
+      "harmonie": 4
+    }
   }
 ]
