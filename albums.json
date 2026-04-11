@@ -495,5 +495,34 @@
       "edginess": 2,
       "harmonie": 4
     }
+  },
+  {
+    "artist": "Fleetwood Mac",
+    "album": "Rumours",
+    "year": 1977,
+    "genre": "Pop-Rock, Soft-Rock, Classic Rock",
+    "rating": 9.5,
+    "favorite_song": "You Make Loving Fun",
+    "songs": [
+      "Second Hand News",
+      "Dreams",
+      "Never Going Back Again",
+      "Don’t Stop",
+      "Go Your Own Way",
+      "Songbird",
+      "The Chain",
+      "You Make Loving Fun",
+      "I Don’t Want to Know",
+      "Oh Daddy",
+      "Gold Dust Woman"
+    ],
+    "review": "Ich liebe Fleetwood Mac. Und naklar, dann liebe ich auch dieses Album.\nWow es ist so gut. Wie kann man so viele Banger auf ein Album schrauben?!\n\n\"Dreams\", \"The Chain\" und \"Go You're Own Way\" sind hierbei natürlich die absoluten Klassiker und dürfen in keiner RBB-Radio-Morgenshow fehlen, sind desswegen aber auch schon ein bisschen zu überhört. \nIch finde das unglaublich groovige Intro von \"You Make Loving Fun\" und die catchige Hook von \"I Don't Want to Know\" ehrlich gesagt sogar noch besser, obwohl beide Songs eher zu den unbekannteren zählen. \n",
+    "cover_url": "https://upload.wikimedia.org/wikipedia/en/f/fb/FMacRumours.PNG",
+    "reviewed_at": "2026-04-11T11:20:18.177Z",
+    "sub_ratings": {
+      "hoerspass": 5,
+      "edginess": 3,
+      "harmonie": 4
+    }
   }
 ]
