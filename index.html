@@ -884,12 +884,12 @@
       <option value="secondary">album</option>
       <option value="year">jahr</option>
       <option value="genre">genre</option>
-      <option value="rating">wertung</option>
+      <option value="rating" selected>wertung</option>
       <option value="index">datum</option>
     </select>
     <select id="sort-dir">
       <option value="1">↑</option>
-      <option value="-1">↓</option>
+      <option value="-1" selected>↓</option>
     </select>
     <select id="min-rating">
       <option value="0">alle</option>
@@ -1028,7 +1028,7 @@
 <script>
 // ── MODE ─────────────────────────────────────────────
 let mode = localStorage.getItem("regal_mode") || "music"; // "music" | "travel"
-let albums = [], travels = [], selectedSongs = [], sortKey = "primary", sortDir = 1;
+let albums = [], travels = [], selectedSongs = [], sortKey = "rating", sortDir = 1;
 
 const PW_HASH = "ebc5fcca14a0cd1e62e741d1a413a2e9eb97f0322a09c2d8eb2b73768006d8bd";
 let unlocked = sessionStorage.getItem("pr_ok") === "1";
