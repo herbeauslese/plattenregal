@@ -597,12 +597,14 @@
     border: 1px solid #bbb;
     border-radius: 50%;
     color: #bbb;
-    cursor: default;
+    cursor: pointer;
     flex-shrink: 0;
     position: relative;
+    -webkit-tap-highlight-color: transparent;
   }
   body.dark .srf-tooltip { border-color: #555; color: #555; }
-  .srf-tooltip:hover::after {
+  .srf-tooltip:hover::after,
+  .srf-tooltip.tip-open::after {
     content: attr(data-tip);
     position: absolute;
     left: 18px; top: -2px;
@@ -616,7 +618,8 @@
     line-height: 1.5;
     white-space: normal;
   }
-  body.dark .srf-tooltip:hover::after { background: #222; border-color: #555; }
+  body.dark .srf-tooltip:hover::after,
+  body.dark .srf-tooltip.tip-open::after { background: #222; border-color: #555; }
 
   /* Rating top-right — organisch */
   .entry-rating {
@@ -884,12 +887,12 @@
       <option value="secondary">album</option>
       <option value="year">jahr</option>
       <option value="genre">genre</option>
-      <option value="rating" selected>wertung</option>
+      <option value="rating">wertung</option>
       <option value="index">datum</option>
     </select>
     <select id="sort-dir">
       <option value="1">↑</option>
-      <option value="-1" selected>↓</option>
+      <option value="-1">↓</option>
     </select>
     <select id="min-rating">
       <option value="0">alle</option>
@@ -1028,7 +1031,7 @@
 <script>
 // ── MODE ─────────────────────────────────────────────
 let mode = localStorage.getItem("regal_mode") || "music"; // "music" | "travel"
-let albums = [], travels = [], selectedSongs = [], sortKey = "rating", sortDir = 1;
+let albums = [], travels = [], selectedSongs = [], sortKey = "primary", sortDir = 1;
 
 const PW_HASH = "ebc5fcca14a0cd1e62e741d1a413a2e9eb97f0322a09c2d8eb2b73768006d8bd";
 let unlocked = sessionStorage.getItem("pr_ok") === "1";
@@ -1251,7 +1254,11 @@ function render() {
       + arrow
       + `</div>`
       + `<div class="stack-peek${multi ? "" : " stack-single"}" id="${stackId}">`
-      + g.items.map(x => htmlFn(x)).join("")
+      + [...g.items].sort((a,b) => {
+          const da = a.reviewed_at ? new Date(a.reviewed_at).getTime() : 0;
+          const db = b.reviewed_at ? new Date(b.reviewed_at).getTime() : 0;
+          return da - db; // älteste Bewertung zuerst
+        }).map(x => htmlFn(x)).join("")
       + `</div></div>`;
   }).join("");
 
@@ -1268,6 +1275,20 @@ function render() {
   // init tickers after DOM is painted
   requestAnimationFrame(() => requestAnimationFrame(initTickers));
 }
+
+// Touch-freundliche Tooltips: Klick togglet .tip-open
+document.addEventListener("click", e => {
+  const tip = e.target.closest(".srf-tooltip");
+  if (tip) {
+    e.stopPropagation();
+    const isOpen = tip.classList.contains("tip-open");
+    document.querySelectorAll(".srf-tooltip.tip-open").forEach(t => t.classList.remove("tip-open"));
+    if (!isOpen) tip.classList.add("tip-open");
+    return;
+  }
+  // Klick woanders → alle schließen
+  document.querySelectorAll(".srf-tooltip.tip-open").forEach(t => t.classList.remove("tip-open"));
+});
 
 function toggleGroup(id, label) {
   const el = document.getElementById(id);
