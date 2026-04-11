@@ -524,5 +524,33 @@
       "edginess": 3,
       "harmonie": 4
     }
+  },
+  {
+    "artist": "The Smiths",
+    "album": "The Queen Is Dead",
+    "year": 1986,
+    "genre": "New Wave, Alternative Rock, Soft Rock",
+    "rating": 8,
+    "favorite_song": "There Is a Light That Never Goes Out",
+    "songs": [
+      "The Queen Is Dead",
+      "Frankly, Mr. Shankly",
+      "I Know It’s Over",
+      "Never Had No One Ever",
+      "Cemetry Gates",
+      "Bigmouth Strikes Again",
+      "The Boy With the Thorn in His Side",
+      "Vicar in a Tutu",
+      "There Is a Light That Never Goes Out",
+      "Some Girls Are Bigger Than Others"
+    ],
+    "review": "Ein Album zum Weinen und zum Lachen, naja eher zum Weinen. Mit \"I Know It's Over\" hat man einen der traurigsten Songs jemals und mit \"Ther Is a Light That Never Goes Out\" einen der schönsten. \nAuch viele der anderen sind absolute Smiths Klassiker, auch wenn ich nicht alle sooo doll mag. \nMein Underdog-Favorit ist auf jedenfall \"Cemetry Gates\".\nNotSoFunFact: Während der Aufnahmen steckte der Bassist Andy Rourke tief in einer Heroinsucht — die Band holte Craig Gannon als vorübergehenden Ersatz. Als Rourke sich erholte, blieb Gannon als zweiter Gitarrist und Rourke spielte den Bass für den Titelsong mal eben spontan und improvisiert ein. \n",
+    "cover_url": "https://upload.wikimedia.org/wikipedia/en/thumb/e/ed/The-Queen-is-Dead-cover.png/250px-The-Queen-is-Dead-cover.png",
+    "reviewed_at": "2026-04-11T16:28:15.523Z",
+    "sub_ratings": {
+      "hoerspass": 4,
+      "edginess": 3,
+      "harmonie": 4
+    }
   }
 ]
