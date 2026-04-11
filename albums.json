@@ -22,9 +22,14 @@
       "Motorcycle Drive By",
       "God of Wine"
     ],
-    "review": "Wow Wow Wow, wie toll muss es sein eine US High School in den 90's zu besuchen!? Eines der besten Debut Alben ever. Ohne wenn und aber. Der ein oder andere Song kann nicht ganz mithalten, aber die vielen richitg guten holen das wieder raus, Wow!\nÜbrigens: Produzent Clive Davis von Arista lehnte die Band nach einem frühen Showcase ab, weil er der Meinung war, Stephan Jenkins könne nicht singen. Das Album wurde danach bei Elektra Records aufgenommen und ging 6x Platin.\nTja Clive, da hast du wohl herb verschätzt.",
+    "review": "Wow Wow Wow, wie toll muss es sein eine US High School in den 90's zu besuchen!? Eines der besten Debut Alben ever. Ohne wenn und aber. Der ein oder andere Song kann nicht ganz mithalten, aber die vielen richitg guten holen das wieder raus, Wow!\nÜbrigens: Produzent Clive Davis von Arista lehnte die Band nach einem frühen Showcase ab, weil er der Meinung war, Stephan Jenkins könne nicht singen. Das Album wurde danach bei Elektra Records aufgenommen und ging 6x Platin.\nTja Clive, da hast du wohl dich herb verschätzt.",
     "cover_url": "https://upload.wikimedia.org/wikipedia/en/d/da/Third_eye_blind_self_titled.jpg",
-    "reviewed_at": "2026-04-03T00:00:00.000Z"
+    "reviewed_at": "2026-04-03T00:00:00.000Z",
+    "sub_ratings": {
+      "hoerspass": 5,
+      "edginess": 3,
+      "harmonie": 4
+    }
   },
   {
     "artist": "The Stone Roses",
