@@ -965,6 +965,15 @@
         <div class="row"><label>genre:</label><input type="text" id="f-genre" placeholder="anpassen" list="genre-list"></div>
         <datalist id="genre-list"></datalist>
         <div class="row"><label>wertung (1-10):</label><input type="number" id="f-rating" min="1" max="10" step="0.5" style="max-width:60px"></div>
+        <div class="row" style="margin-top:6px;align-items:flex-start">
+          <label style="padding-top:2px">hörspaß (1-5):</label><input type="number" id="f-hoerspass" min="1" max="5" step="1" style="max-width:45px" placeholder="1-5">
+        </div>
+        <div class="row">
+          <label>edginess (1-5):</label><input type="number" id="f-edginess" min="1" max="5" step="1" style="max-width:45px" placeholder="1-5">
+        </div>
+        <div class="row">
+          <label>harmonie (1-5):</label><input type="number" id="f-harmonie" min="1" max="5" step="1" style="max-width:45px" placeholder="1-5">
+        </div>
         <div class="row"><label>cover url:</label><input type="text" id="f-cover" placeholder="direkte bild-url (pflicht)"></div>
         <br>
         <div id="song-section" style="display:none">
@@ -1767,13 +1776,23 @@ document.getElementById("btn-push-music").addEventListener("click", async () => 
     rating, favorite_song: fav, songs,
     review:        document.getElementById("f-review").value,
     cover_url:     coverUrl,
-    reviewed_at:   new Date().toISOString()
+    reviewed_at:   new Date().toISOString(),
+    sub_ratings: (() => {
+      const sr = {};
+      const h = parseInt(document.getElementById("f-hoerspass").value);
+      const e = parseInt(document.getElementById("f-edginess").value);
+      const ha = parseInt(document.getElementById("f-harmonie").value);
+      if (h >= 1 && h <= 5)  sr.hoerspass = h;
+      if (e >= 1 && e <= 5)  sr.edginess  = e;
+      if (ha >= 1 && ha <= 5) sr.harmonie  = ha;
+      return sr;
+    })()
   };
 
   const ok = await pushToGithub(entry, albums, ps);
   if (ok) {
     albums.push(entry); render(); updateGenreList();
-    ["f-artist","f-album","f-year","f-genre","f-rating","f-review","f-cover"].forEach(id=>document.getElementById(id).value="");
+    ["f-artist","f-album","f-year","f-genre","f-rating","f-review","f-cover","f-hoerspass","f-edginess","f-harmonie"].forEach(id=>document.getElementById(id).value="");
     document.getElementById("f-songs-manual").value="";
     document.getElementById("f-fav-manual").value="";
     document.getElementById("song-radios").innerHTML="";
