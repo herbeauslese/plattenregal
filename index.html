@@ -1679,8 +1679,13 @@ async function mbSearch() {
   document.getElementById("form-section").style.display="none";
   st.textContent="suche...";
   try {
+    // MusicBrainz Lucene-Syntax: artist und release als getrennte Felder
+    let query = "";
+    if (artist && album) query = `artist:"${artist}" AND release:"${album}"`;
+    else if (artist)     query = `artist:"${artist}"`;
+    else                 query = `release:"${album}"`;
     const data=await (await fetch(
-      `https://musicbrainz.org/ws/2/release/?query=${encodeURIComponent(artist+" "+album)}&fmt=json&limit=20`,
+      `https://musicbrainz.org/ws/2/release/?query=${encodeURIComponent(query)}&fmt=json&limit=20`,
       {headers:{"User-Agent":"plattenregal/1.0"}}
     )).json();
     st.textContent=data.releases.length?`${data.releases.length} treffer:`:"nichts gefunden.";
